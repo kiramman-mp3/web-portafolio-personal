@@ -3,13 +3,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 @Component({
   selector: 'app-proyectos-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe],
+  imports: [CommonModule, RouterModule, FooterComponent],
   templateUrl: './proyectos.component.html',
   styleUrl: './proyectos.component.scss'
 })
