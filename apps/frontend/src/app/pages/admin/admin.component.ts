@@ -159,9 +159,9 @@ export class AdminComponent implements OnInit {
   }
 
   loadData(): void {
-    this.servicesService.getServices().subscribe(data => this.services.set(data));
-    this.projectsService.getProjects().subscribe(data => this.projects.set(data));
-    this.certificatesService.getCertificates().subscribe(data => this.certificates.set(data));
+    this.servicesService.getServices().subscribe({ next: data => this.services.set(data), error: () => this.services.set([]) });
+    this.projectsService.getProjects().subscribe({ next: data => this.projects.set(data), error: () => this.projects.set([]) });
+    this.certificatesService.getCertificates().subscribe({ next: data => this.certificates.set(data), error: () => this.certificates.set([]) });
     this.loadContacts();
   }
 

@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CertificatesService, Certificate, CertificateStats } from '../../shared/services/certificates.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 export interface CategoryFilterItem {
@@ -22,7 +23,7 @@ export interface CategoryDefinition {
 @Component({
   selector: 'app-certificados-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, ConnectionErrorComponent],
   templateUrl: './certificados.component.html',
   styleUrl: './certificados.component.scss'
 })
@@ -36,6 +37,7 @@ export class CertificadosComponent implements OnInit {
   copiedId: boolean = false;
   isBrowser: boolean = false;
   isLoading: boolean = true;
+  hasError: boolean = false;
 
   readonly categoryDefinitions: CategoryDefinition[] = [
     {
@@ -103,6 +105,12 @@ export class CertificadosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCertificates();
+  }
+
+  loadCertificates(): void {
+    this.isLoading = true;
+    this.hasError = false;
     this.certificatesService.getCertificates().subscribe({
       next: (data) => {
         this.certificates = data;
@@ -116,6 +124,11 @@ export class CertificadosComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
+        this.certificates = [];
+        this.filteredCertificates = [];
+        this.availableCategories = [];
+        this.stats = undefined;
+        this.hasError = true;
         this.isLoading = false;
         this.cdr.detectChanges();
       }
