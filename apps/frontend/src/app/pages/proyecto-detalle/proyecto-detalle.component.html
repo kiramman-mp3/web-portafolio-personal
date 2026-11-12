@@ -91,7 +91,9 @@
     </div>
 
     <!-- Error State (Project Not Found) -->
-    <div *ngIf="!isLoading && !project" class="error-detail-state">
+    <app-connection-error *ngIf="!isLoading && hasConnectionError" (retry)="loadProject()"></app-connection-error>
+
+    <div *ngIf="!isLoading && !project && !hasConnectionError" class="error-detail-state">
       <i class="fas fa-triangle-exclamation"></i>
       <h2>Proyecto no encontrado</h2>
       <p>Lo sentimos, no pudimos cargar los detalles del proyecto solicitado o el proyecto no existe.</p>

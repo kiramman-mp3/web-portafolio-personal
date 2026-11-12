@@ -12,7 +12,7 @@
     </div>
 
     <!-- Interactive Filters -->
-    <div class="filters-container">
+    <div class="filters-container" *ngIf="!hasError">
       <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
         Todos
       </button>
@@ -31,7 +31,9 @@
     </div>
 
     <!-- Projects Grid -->
-    <div class="projects-list-grid" *ngIf="!isLoading">
+    <app-connection-error *ngIf="!isLoading && hasError" (retry)="loadProjects()"></app-connection-error>
+
+    <div class="projects-list-grid" *ngIf="!isLoading && !hasError">
       <div *ngFor="let project of filteredProjects" class="project-detail-card">
         <div class="card-image-wrap">
           <img [src]="project.image" [alt]="project.title" />
@@ -66,7 +68,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && filteredProjects.length === 0" class="empty-projects-state">
+    <div *ngIf="!isLoading && !hasError && filteredProjects.length === 0" class="empty-projects-state">
       <i class="fas fa-folder-open"></i>
       <p>No se encontraron proyectos con esta categoría actualmente.</p>
     </div>
