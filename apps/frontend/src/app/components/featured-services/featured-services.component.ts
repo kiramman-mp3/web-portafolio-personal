@@ -2,17 +2,19 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
+import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 
 @Component({
   selector: 'app-featured-services',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ConnectionErrorComponent],
   templateUrl: './featured-services.component.html',
   styleUrl: './featured-services.component.scss'
 })
 export class FeaturedServicesComponent implements OnInit {
   featuredServices: ServiceItem[] = [];
   isBrowser = false;
+  hasError = false;
 
   constructor(
     private servicesService: ServicesService,
@@ -24,11 +26,23 @@ export class FeaturedServicesComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.servicesService.getServices().subscribe(services => {
+      this.loadServices();
+    }
+  }
+
+  loadServices(): void {
+    this.hasError = false;
+    this.servicesService.getServices().subscribe({
+      next: (services) => {
         this.featuredServices = services;
         this.cdr.detectChanges();
-      });
-    }
+      },
+      error: () => {
+        this.featuredServices = [];
+        this.hasError = true;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   getServiceIcon(id: string): string {

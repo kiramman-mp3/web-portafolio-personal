@@ -1,21 +1,24 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 @Component({
   selector: 'app-proyecto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe],
+  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe, ConnectionErrorComponent],
   templateUrl: './proyecto-detalle.component.html',
   styleUrl: './proyecto-detalle.component.scss'
 })
 export class ProyectoDetalleComponent implements OnInit {
   project?: Project;
   isLoading = true;
+  hasConnectionError = false;
   isBrowser = false;
 
   constructor(
@@ -29,26 +32,35 @@ export class ProyectoDetalleComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        this.projectsService.getProjectById(id).subscribe({
-          next: (data) => {
-            this.project = data;
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          },
-          error: (err) => {
-            console.error('Failed to load project details', err);
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }
-        });
-      } else {
-        this.isLoading = false;
-      }
+      this.loadProject();
     } else {
       this.isLoading = false;
     }
+  }
+
+  loadProject(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      this.isLoading = false;
+      return;
+    }
+    this.isLoading = true;
+    this.hasConnectionError = false;
+    this.projectsService.getProjectById(id).subscribe({
+      next: (data) => {
+        this.project = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load project details', err);
+        this.project = undefined;
+        // 404 = proyecto inexistente; cualquier otro fallo se trata como problema de conexión
+        this.hasConnectionError = !(err instanceof HttpErrorResponse && err.status === 404);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   getTechIcon(tech: string): string {

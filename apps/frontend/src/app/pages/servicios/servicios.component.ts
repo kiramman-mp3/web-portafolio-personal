@@ -3,13 +3,14 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 @Component({
   selector: 'app-servicios-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe],
+  imports: [CommonModule, RouterModule, FooterComponent, MarkdownPipe, ConnectionErrorComponent],
   templateUrl: './servicios.component.html',
   styleUrl: './servicios.component.scss'
 })
@@ -17,6 +18,7 @@ export class ServiciosComponent implements OnInit {
   services: ServiceItem[] = [];
   isBrowser = false;
   isLoading = true;
+  hasError = false;
 
   constructor(
     private servicesService: ServicesService,
@@ -28,20 +30,28 @@ export class ServiciosComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.servicesService.getServices().subscribe({
-        next: (data) => {
-          this.services = data;
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        }
-      });
+      this.loadServices();
     } else {
       this.isLoading = false;
     }
+  }
+
+  loadServices(): void {
+    this.isLoading = true;
+    this.hasError = false;
+    this.servicesService.getServices().subscribe({
+      next: (data) => {
+        this.services = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.services = [];
+        this.hasError = true;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   getTechIcon(tech: string): string {
