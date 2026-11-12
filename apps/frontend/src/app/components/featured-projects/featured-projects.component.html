@@ -4,7 +4,9 @@
       <h2 class="section-title">Proyectos</h2>
     </div>
 
-    <div class="projects-grid">
+    <app-connection-error *ngIf="hasError" (retry)="loadProjects()"></app-connection-error>
+
+    <div class="projects-grid" *ngIf="!hasError">
       <div *ngFor="let project of featuredProjects" class="project-card">
         <div class="project-image">
           <img [src]="project.image" [alt]="project.title" />

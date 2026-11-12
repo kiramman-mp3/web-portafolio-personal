@@ -3,12 +3,13 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
 @Component({
   selector: 'app-proyectos-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, ConnectionErrorComponent],
   templateUrl: './proyectos.component.html',
   styleUrl: './proyectos.component.scss'
 })
@@ -18,6 +19,7 @@ export class ProyectosComponent implements OnInit {
   currentFilter = 'todos';
   isBrowser = false;
   isLoading = true;
+  hasError = false;
 
   constructor(
     private projectsService: ProjectsService,
@@ -29,21 +31,30 @@ export class ProyectosComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.projectsService.getProjects().subscribe({
-        next: (data) => {
-          this.projects = data;
-          this.filteredProjects = data;
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        }
-      });
+      this.loadProjects();
     } else {
       this.isLoading = false;
     }
+  }
+
+  loadProjects(): void {
+    this.isLoading = true;
+    this.hasError = false;
+    this.projectsService.getProjects().subscribe({
+      next: (data) => {
+        this.projects = data;
+        this.setFilter(this.currentFilter);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.projects = [];
+        this.filteredProjects = [];
+        this.hasError = true;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   getTechIcon(tech: string): string {

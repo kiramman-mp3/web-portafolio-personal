@@ -16,7 +16,9 @@
       <p class="loading-text">Cargando servicios...</p>
     </div>
 
-    <div class="services-list" *ngIf="!isLoading">
+    <app-connection-error *ngIf="!isLoading && hasError" (retry)="loadServices()"></app-connection-error>
+
+    <div class="services-list" *ngIf="!isLoading && !hasError">
       <div *ngFor="let service of services; let i = index" class="service-detail-card" [class.reverse]="i % 2 !== 0">
         <!-- Service Image -->
         <div class="service-image-block">

@@ -13,7 +13,7 @@
     </div>
 
     <!-- Quick Stats Bento Strip -->
-    <div class="stats-strip" *ngIf="stats">
+    <div class="stats-strip" *ngIf="stats && !hasError">
       <div class="stat-card">
         <div class="stat-icon-wrap primary">
           <i class="fas fa-certificate"></i>
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Interactive Filters (solo categorías con certificados) -->
-    <div class="filters-container">
+    <div class="filters-container" *ngIf="!hasError">
       <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
         <i class="fas fa-th-large"></i> Todos ({{ certificates.length }})
       </button>
@@ -72,7 +72,9 @@
     </div>
 
     <!-- Certificates Grid -->
-    <div class="certificates-grid" *ngIf="!isLoading">
+    <app-connection-error *ngIf="!isLoading && hasError" (retry)="loadCertificates()"></app-connection-error>
+
+    <div class="certificates-grid" *ngIf="!isLoading && !hasError">
       <article *ngFor="let cert of filteredCertificates" class="cert-card" (click)="openCertificateModal(cert)">
         
         <!-- Ribbon / Badge Top -->
@@ -144,7 +146,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && filteredCertificates.length === 0" class="empty-certs-state">
+    <div *ngIf="!isLoading && !hasError && filteredCertificates.length === 0" class="empty-certs-state">
       <div class="empty-icon-box">
         <i class="fas fa-certificate"></i>
       </div>
