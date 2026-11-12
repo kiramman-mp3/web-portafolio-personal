@@ -1,0 +1,45 @@
+.connection-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted-2);
+
+  > i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: rgb(var(--ink-rgb) / 0.25);
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0 0 1.5rem;
+  }
+}
+
+.btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 50px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgb(var(--primary-rgb) / 0.3);
+
+  &:hover {
+    background: var(--purple-bright);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgb(var(--primary-rgb) / 0.45);
+  }
+}

@@ -2,17 +2,19 @@ import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 
 @Component({
   selector: 'app-featured-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ConnectionErrorComponent],
   templateUrl: './featured-projects.component.html',
   styleUrl: './featured-projects.component.scss'
 })
 export class FeaturedProjectsComponent implements OnInit {
   featuredProjects: Project[] = [];
   isBrowser = false;
+  hasError = false;
 
   constructor(
     private projectsService: ProjectsService,
@@ -24,11 +26,23 @@ export class FeaturedProjectsComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      this.projectsService.getProjects().subscribe(projects => {
+      this.loadProjects();
+    }
+  }
+
+  loadProjects(): void {
+    this.hasError = false;
+    this.projectsService.getProjects().subscribe({
+      next: (projects) => {
         this.featuredProjects = projects;
         this.cdr.detectChanges();
-      });
-    }
+      },
+      error: () => {
+        this.featuredProjects = [];
+        this.hasError = true;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   getStatusBadgeClass(status: string): string {

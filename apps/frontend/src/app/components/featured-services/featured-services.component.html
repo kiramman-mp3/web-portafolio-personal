@@ -4,7 +4,9 @@
       <h2 class="section-title">Servicios</h2>
     </div>
 
-    <div class="services-grid">
+    <app-connection-error *ngIf="hasError" (retry)="loadServices()"></app-connection-error>
+
+    <div class="services-grid" *ngIf="!hasError">
       <div *ngFor="let service of featuredServices" class="service-card">
         <div class="service-image-wrapper">
           <img [src]="service.imageUrl" [alt]="service.imageAlt" class="service-image" />
