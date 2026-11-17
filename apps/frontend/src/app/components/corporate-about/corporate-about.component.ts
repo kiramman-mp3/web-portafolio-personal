@@ -13,7 +13,7 @@ interface AboutFact {
 })
 export class CorporateAboutComponent {
   facts: AboutFact[] = [
-    { label: 'Ubicación', value: 'Quero, Tungurahua, Ecuador' },
+    { label: 'Ubicación', value: 'Tungurahua, Ecuador' },
     { label: 'Estudios', value: 'Universidad Técnica de Ambato' },
     { label: 'Frontend', value: 'Angular, TypeScript, Sass' },
     { label: 'Backend', value: 'Node.js, Express, Prisma' },

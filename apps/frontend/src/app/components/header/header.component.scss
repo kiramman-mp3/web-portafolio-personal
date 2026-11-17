@@ -105,6 +105,63 @@
     gap: 0.5rem;
 }
 
+.nav-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease;
+
+    &:hover {
+        color: var(--text-color);
+        background: rgb(var(--ink-rgb) / 0.1);
+    }
+
+    @media (pointer: coarse) {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+.nav-cv {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.25rem;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: filter 0.25s ease, transform 0.25s ease;
+
+    &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
+
+    @media (pointer: coarse) {
+        min-height: 44px;
+    }
+
+    // En móvil solo el icono, para que no se apriete la barra
+    @include bp.down(md) {
+        padding: 8px 12px;
+
+        .nav-cv-label {
+            display: none;
+        }
+    }
+}
+
 .menu-toggle {
     display: none;
     flex-direction: column;
