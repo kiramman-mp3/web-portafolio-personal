@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonComponent } from '../button/button.component';
 import { GithubActivity, GithubActivityService, GITHUB_USER } from '../../shared/services/github-activity.service';
+import { AVAILABILITY, CV_URL } from '../../shared/constants/profile';
 
 @Component({
   selector: 'app-hero',
@@ -18,6 +19,8 @@ export class HeroComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   readonly githubUser = GITHUB_USER;
+  readonly availability = AVAILABILITY;
+  readonly cvUrl = CV_URL;
   activity = signal<GithubActivity | null>(null);
   failed = signal(false);
 

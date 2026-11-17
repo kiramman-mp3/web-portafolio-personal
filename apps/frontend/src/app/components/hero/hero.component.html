@@ -14,8 +14,14 @@
         Construyo aplicaciones web de punta a punta: interfaces en Angular, APIs en Node y Express,
         datos en PostgreSQL. Estudio en la Universidad Técnica de Ambato.
       </p>
+      @if (availability) {
+        <p class="hero-availability"><span class="availability-dot" aria-hidden="true"></span>{{ availability }}</p>
+      }
       <div class="hero-actions">
         <app-button variant="primary" (click)="scrollToContact()">Escríbeme</app-button>
+        @if (cvUrl) {
+          <a [href]="cvUrl" class="hero-link" target="_blank" rel="noopener noreferrer">Descargar CV</a>
+        }
         <a routerLink="/proyectos" class="hero-link">Ver proyectos</a>
       </div>
     </div>
@@ -26,10 +32,12 @@
         <span class="terminal-title">~/{{ githubUser }}</span>
       </div>
       <div class="terminal-body">
+        <p class="line"><span class="prompt">$</span> cat nombre.txt</p>
+        <p class="line out">Johan Rodríguez</p>
         <p class="line"><span class="prompt">$</span> whoami</p>
         <p class="line out">{{ githubUser }}</p>
         <p class="line"><span class="prompt">$</span> cat ubicacion.txt</p>
-        <p class="line out">Quero, Tungurahua, Ecuador</p>
+        <p class="line out">Tungurahua, Ecuador</p>
 
         <p class="line"><span class="prompt">$</span> git log -1 --oneline</p>
         @if (activity(); as data) {
