@@ -466,3 +466,34 @@ html.intro-active
   .scroll-reveal
     opacity: 1
     transform: none
+
+
+// —— Anclas bajo la barra fija ——
+// El formulario de contacto se alcanza con fragmento (#formulario-contacto) y no debe quedar tapado
+#formulario-contacto
+  scroll-margin-top: 100px
+
+
+// —— Objetivos táctiles ——
+// En pantallas táctiles los enlaces sueltos llegan a 44px. Lleva !important porque los estilos
+// de cada componente (con atributo de encapsulación) tienen más especificidad que este archivo.
+@media (pointer: coarse)
+  .nav-links a, .footer-nav a, .contact-item a, .hero-link, .view-more-btn, .project-links a, .intro-skip
+    display: inline-flex !important
+    align-items: center
+    gap: 0.4rem
+    min-height: 44px !important
+
+
+// —— Contraste alto ——
+// Con prefers-contrast: more sube los grises y los bordes para que el texto y los límites se lean mejor.
+@media (prefers-contrast: more)
+  :root
+    --text-muted: rgb(var(--ink-rgb) / 0.92)
+    --text-muted-2: rgb(var(--ink-rgb) / 0.8)
+    --text-muted-3: rgb(var(--ink-rgb) / 0.7)
+    --border: rgb(var(--ink-rgb) / 0.3)
+    --border-strong: rgb(var(--ink-rgb) / 0.5)
+    --glass-border: rgb(255 255 255 / 0.3)
+    --glass-bg: rgb(10 4 5 / 0.85)
+    --glass-bg-strong: rgb(10 4 5 / 0.92)
