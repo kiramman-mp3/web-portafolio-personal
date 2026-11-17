@@ -112,18 +112,18 @@
   position: absolute;
   right: 1.5rem;
   bottom: 1.5rem;
-  padding: 0.5rem 0.9rem;
+  padding: 0.6rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.15);
-  background: rgb(255 255 255 / 0.04);
-  color: rgb(255 255 255 / 0.65);
-  font-size: 0.85rem;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  background: rgb(255 255 255 / 0.1);
+  color: rgb(255 255 255 / 0.9);
+  font-size: 0.95rem;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
     color: #fff;
-    border-color: rgb(255 255 255 / 0.35);
+    border-color: rgb(255 255 255 / 0.6);
   }
 }
 
