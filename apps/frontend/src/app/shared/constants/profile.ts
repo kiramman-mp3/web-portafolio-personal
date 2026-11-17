@@ -10,4 +10,4 @@ export const LINKEDIN_URL = 'https://www.linkedin.com/in/johan-rodriguez-dev/';
 export const GITHUB_URL = 'https://github.com/kiramman-mp3';
 
 /** CV en PDF servido desde /public, p. ej. '/cv-johan-rodriguez.pdf'. Vacío = no se muestra. */
-export const CV_URL = '';
+export const CV_URL = '/cv-johan-rodriguez-es.pdf';
