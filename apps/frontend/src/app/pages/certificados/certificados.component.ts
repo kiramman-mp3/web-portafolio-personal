@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CertificatesService, Certificate, CertificateStats } from '../../shared/services/certificates.service';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { EducationJourneyComponent } from '../../components/education-journey/education-journey.component';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
 
@@ -23,7 +24,7 @@ export interface CategoryDefinition {
 @Component({
   selector: 'app-certificados-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent, ConnectionErrorComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, ConnectionErrorComponent, EducationJourneyComponent],
   templateUrl: './certificados.component.html',
   styleUrl: './certificados.component.scss'
 })

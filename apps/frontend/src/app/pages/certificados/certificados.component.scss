@@ -4,7 +4,8 @@
   position: relative;
   width: 100%;
   background: transparent;
-  padding: 120px 8% 80px;
+  // El recorrido de arriba ya deja el espacio de la barra fija
+  padding: 60px 8% 80px;
   color: var(--text-color);
   overflow: hidden;
   z-index: 1;
