@@ -15,7 +15,7 @@
         <ul class="footer-nav">
           <li><a routerLink="/servicios">Servicios</a></li>
           <li><a routerLink="/proyectos">Proyectos</a></li>
-          <li><a routerLink="/certificados">Certificados</a></li>
+          <li><a routerLink="/educacion">Educación</a></li>
           <li><a routerLink="/contacto">Contacto</a></li>
         </ul>
       </div>
@@ -36,6 +36,18 @@
               @kiramman-mp3
             </a>
           </div>
+          @if (linkedinUrl) {
+            <div class="contact-item">
+              <i class="fab fa-linkedin-in"></i>
+              <a [href]="linkedinUrl" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            </div>
+          }
+          @if (cvUrl) {
+            <div class="contact-item">
+              <i class="fas fa-file-arrow-down"></i>
+              <a [href]="cvUrl" target="_blank" rel="noopener noreferrer">Descargar CV</a>
+            </div>
+          }
         </div>
       </div>
     </div>

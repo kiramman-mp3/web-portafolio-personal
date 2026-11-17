@@ -9,11 +9,27 @@
       <a href="/" [class.is-active]="isActive('/')" (click)="navigateToHome(); $event.preventDefault()">Inicio</a>
       <a href="/servicios" [class.is-active]="isActive('/servicios')" (click)="navigateToServices(); $event.preventDefault()">Servicios</a>
       <a href="/proyectos" [class.is-active]="isActive('/proyectos')" (click)="navigateToProjects(); $event.preventDefault()">Proyectos</a>
-      <a href="/certificados" [class.is-active]="isActive('/certificados')" (click)="navigateToCertificates(); $event.preventDefault()">Certificados</a>
+      <a href="/educacion" [class.is-active]="isActive('/educacion')" (click)="navigateToEducation(); $event.preventDefault()">Educación</a>
       <a href="/contacto" [class.is-active]="isActive('/contacto')" (click)="navigateToContact(); $event.preventDefault()">Contacto</a>
     </div>
 
     <div class="nav-actions">
+      @if (linkedinUrl) {
+        <a class="nav-social" [href]="linkedinUrl" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
+          <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+        </a>
+      }
+      @if (githubUrl) {
+        <a class="nav-social" [href]="githubUrl" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+      }
+      @if (cvUrl) {
+        <a class="nav-cv" [href]="cvUrl" download target="_blank" rel="noopener noreferrer" aria-label="Descargar CV">
+          <i class="fas fa-file-arrow-down" aria-hidden="true"></i>
+          <span class="nav-cv-label">Descargar CV</span>
+        </a>
+      }
       <button type="button" class="menu-toggle" [class.open]="isMenuOpen()" (click)="toggleMenu()" id="menu-toggle"
         aria-controls="nav-links" [attr.aria-expanded]="isMenuOpen()" aria-label="Abrir menú">
         <span></span><span></span><span></span>

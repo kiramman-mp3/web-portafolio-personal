@@ -7,6 +7,7 @@ import { NavigationService } from '../../shared/services/navigation.service';
 import { ScrollService, scrollBehavior } from '../../shared/services/scroll.service';
 import { LogoMarkComponent } from '../logo-mark/logo-mark.component';
 import { signal } from '@angular/core';
+import { CV_URL, GITHUB_URL, LINKEDIN_URL } from '../../shared/constants/profile';
 
 @Component({
     selector: 'app-header',
@@ -19,6 +20,9 @@ import { signal } from '@angular/core';
 export class HeaderComponent implements OnDestroy {
     @ViewChild('navbar', { static: false }) navbar!: ElementRef;
     isMenuOpen = signal(false);
+    linkedinUrl = LINKEDIN_URL;
+    githubUrl = GITHUB_URL;
+    cvUrl = CV_URL;
     // Ruta actual sin query ni fragmento, para marcar la sección activa en la píldora
     currentPath = signal('/');
     private navEndSub?: Subscription;
@@ -98,11 +102,11 @@ export class HeaderComponent implements OnDestroy {
         this.isMenuOpen.set(false);
     }
 
-    navigateToCertificates(): void {
-        if (this.router.url === '/certificados') {
+    navigateToEducation(): void {
+        if (this.router.url === '/educacion') {
             window.scrollTo({ top: 0, behavior: scrollBehavior() });
         } else {
-            this.router.navigate(['/certificados']);
+            this.router.navigate(['/educacion']);
         }
         this.isMenuOpen.set(false);
     }
