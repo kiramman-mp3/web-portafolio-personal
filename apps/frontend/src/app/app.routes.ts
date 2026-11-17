@@ -29,8 +29,14 @@ export const routes: Routes = [
     component: ProyectoDetalleComponent
   },
   {
-    path: 'certificados',
+    path: 'educacion',
     component: CertificadosComponent
+  },
+  {
+    // La página se llamaba Certificados; el enlace viejo sigue funcionando
+    path: 'certificados',
+    redirectTo: 'educacion',
+    pathMatch: 'full'
   },
   {
     path: 'admin',

@@ -129,6 +129,25 @@
     }
 }
 
+.hero-availability {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    // El lead ya deja 2.25rem debajo; se acerca para que la disponibilidad lo acompañe
+    margin: -1rem 0 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+
+    .availability-dot {
+        flex: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 4px rgb(var(--success-rgb) / 0.18);
+    }
+}
+
 .hero-actions {
     display: flex;
     flex-wrap: wrap;
