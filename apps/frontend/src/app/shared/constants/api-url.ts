@@ -12,7 +12,7 @@
  * 4. Fallback: DEFAULT_REMOTE_API
  */
 
-export const DEFAULT_REMOTE_API = 'https://personalportafolio-production.up.railway.app';
+export const DEFAULT_REMOTE_API = 'https://madebyjohan.xyz/api';
 
 export function getBaseApiUrl(): string {
   if (typeof window !== 'undefined') {
