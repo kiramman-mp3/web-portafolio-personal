@@ -1,11 +1,12 @@
-import { Component, ElementRef, NgZone, OnDestroy, OnInit, PLATFORM_ID, QueryList, ViewChildren, computed, inject, signal, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, PLATFORM_ID, QueryList, ViewChild, ViewChildren, computed, inject, signal, AfterViewInit } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { HomeHeroComponent } from '../../components/home-hero/home-hero.component';
 import { Project, ProjectsService } from '../../shared/services/projects.service';
 import { Certificate, CertificatesService } from '../../shared/services/certificates.service';
 import { ValleyService } from '../../shared/services/valley.service';
-import { AVAILABILITY, CV_URL, GITHUB_URL, LINKEDIN_URL } from '../../shared/constants/profile';
+import { GITHUB_URL, LINKEDIN_URL } from '../../shared/constants/profile';
 
 /** Proyecto que tiene su parada en el valle. */
 interface Stop {
@@ -66,12 +67,13 @@ const repoOf = (url?: string) => url?.replace(/\/+$/, '').split('/').pop()?.toLo
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterModule, FooterComponent],
+  imports: [RouterModule, FooterComponent, HomeHeroComponent],
   templateUrl: './home.html',
   styleUrl: './home.sass',
 })
 export class Home implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('chapter') chapters!: QueryList<ElementRef<HTMLElement>>;
+  @ViewChild('heroWrap', { static: true }) heroWrap!: ElementRef<HTMLElement>;
 
   private readonly valley = inject(ValleyService);
   private readonly projectsService = inject(ProjectsService);
@@ -79,8 +81,6 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
   private readonly zone = inject(NgZone);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly availability = AVAILABILITY;
-  readonly cvUrl = CV_URL;
   readonly githubUrl = GITHUB_URL;
   readonly linkedinUrl = LINKEDIN_URL;
 
@@ -141,6 +141,7 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     cancelAnimationFrame(this.frame);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('resize', this.onScroll);
+    document.documentElement.style.removeProperty('--valley-reveal');
   }
 
   /**
@@ -148,6 +149,13 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
    * el centro de la pantalla, más cuánto de él ya se recorrió.
    */
   private measure(): void {
+    // La portada se desvanece en la primera pantalla de scroll y el valle aparece detrás
+    const fade = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.8)));
+    this.heroWrap.nativeElement.style.setProperty('--hero-fade', fade.toFixed(3));
+    // Ya desvanecida no debe recibir clics ni seguir animando por detrás
+    this.heroWrap.nativeElement.style.visibility = fade >= 1 ? 'hidden' : '';
+    document.documentElement.style.setProperty('--valley-reveal', Math.max(0, (fade - 0.25) / 0.75).toFixed(3));
+
     const center = window.innerHeight / 2;
     const items = this.chapters.toArray();
     let position = 0;
