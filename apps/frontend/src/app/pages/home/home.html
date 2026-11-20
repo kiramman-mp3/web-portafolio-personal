@@ -1,7 +1,127 @@
-<div class="page-content-reveal">
-  <app-hero></app-hero>
-  <app-corporate-about></app-corporate-about>
-  <app-featured-services></app-featured-services>
-  <app-featured-projects></app-featured-projects>
-  <app-footer></app-footer>
+<!-- Cada capítulo es un fotograma del valle 3D (ver KEYFRAMES en valley-world.ts), en el mismo orden -->
+<div class="journey">
+  <section #chapter id="inicio" class="chapter chapter--intro">
+    <div class="card card--hero">
+      <p class="kicker">Tungurahua, Ecuador</p>
+      <h1 class="title">Johan Rodríguez</h1>
+      <p class="role">Software Engineering Student · Frontend Developer</p>
+      <p class="lead">
+        TypeScript · React · Open to Full Stack. Construyo sistemas web y móviles de punta a punta:
+        base de datos, API, interfaz, despliegue y documentación.
+      </p>
+      @if (availability) {
+        <p class="availability"><span class="dot" aria-hidden="true"></span>{{ availability }}</p>
+      }
+      <div class="actions">
+        <a class="btn btn--primary" routerLink="/contacto">Escríbeme</a>
+        <a class="btn" routerLink="/proyectos">Ver proyectos</a>
+        @if (cvUrl) {
+          <a class="btn btn--ghost" [href]="cvUrl" target="_blank" rel="noopener noreferrer">Descargar CV</a>
+        }
+      </div>
+    </div>
+    <p class="scroll-hint" aria-hidden="true">Desliza para bajar al valle <i class="fas fa-arrow-down"></i></p>
+  </section>
+
+  <section #chapter id="sobre-mi" class="chapter">
+    <div class="card">
+      <p class="kicker">El volcán Tungurahua</p>
+      <h2 class="title">Sobre mí</h2>
+      <p>
+        Estudio Ingeniería de Software en la Universidad Técnica de Ambato y vivo en Tungurahua, Ecuador.
+        Construyo sistemas web y móviles de punta a punta: base de datos, API, interfaz, despliegue y documentación.
+      </p>
+      <p>
+        Mis proyectos resuelven problemas reales de organizaciones de esta provincia: una junta de agua,
+        un supermercado, una liga deportiva y una universidad. Bajemos al valle a verlos.
+      </p>
+      <dl class="facts">
+        <div><dt>Frontend</dt><dd>TypeScript, React, Angular</dd></div>
+        <div><dt>Backend</dt><dd>Node.js, Express, NestJS</dd></div>
+        <div><dt>Datos</dt><dd>PostgreSQL, MySQL</dd></div>
+        <div><dt>Forma de trabajo</dt><dd>Git Flow, pruebas, CI, Playwright</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  @for (stop of stops(); track stop.id; let i = $index) {
+    <section #chapter class="chapter" [class.chapter--right]="i % 2 === 0" [attr.id]="stop.id" [attr.data-stop]="stop.id">
+      <article class="card" [class.is-current]="current() === i + 2">
+        <p class="kicker"><i class="fas fa-location-dot" aria-hidden="true"></i> {{ stop.place }}</p>
+        <h2 class="title">{{ stop.title }}</h2>
+        <p>{{ stop.summary }}</p>
+        <ul class="chips">
+          @for (tech of stop.technologies; track tech) {
+            <li>{{ tech }}</li>
+          }
+        </ul>
+        <div class="actions">
+          @if (stop.project) {
+            <a class="btn btn--primary" [routerLink]="['/proyectos', stop.project.id]">Ver proyecto</a>
+          }
+          @if (stop.project?.webUrl) {
+            <a class="btn" [href]="stop.project?.webUrl" target="_blank" rel="noopener noreferrer">Demo</a>
+          }
+          <a class="btn btn--ghost" [href]="'https://github.com/kiramman-mp3/' + stop.repo" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-github" aria-hidden="true"></i> Código
+          </a>
+        </div>
+      </article>
+    </section>
+  }
+
+  <section #chapter id="mas-proyectos" class="chapter chapter--wide">
+    <div class="card card--wide">
+      <p class="kicker">Más allá del valle</p>
+      <h2 class="title">Otros proyectos</h2>
+      @if (others().length) {
+        <ul class="mini-grid">
+          @for (project of others(); track project.id) {
+            <li>
+              <a [routerLink]="['/proyectos', project.id]">
+                <strong>{{ project.title }}</strong>
+                <span>{{ project.shortDescription }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+      <a class="btn btn--primary" routerLink="/proyectos">Todos los proyectos</a>
+    </div>
+  </section>
+
+  <section #chapter id="educacion" class="chapter">
+    <div class="card">
+      <p class="kicker">Universidad Técnica de Ambato</p>
+      <h2 class="title">Educación y certificaciones</h2>
+      <p>Ingeniería de Software en la UTA, con certificaciones que complementan lo que construyo.</p>
+      @if (issuers().length) {
+        <ul class="issuers">
+          @for (item of issuers(); track item.issuer) {
+            <li><strong>{{ item.count }}</strong> {{ item.issuer }}</li>
+          }
+        </ul>
+      }
+      <a class="btn btn--primary" routerLink="/educacion">Ver certificados</a>
+    </div>
+  </section>
+
+  <section #chapter id="contacto-inicio" class="chapter chapter--intro">
+    <div class="card card--hero">
+      <p class="kicker">La noche cae sobre Tungurahua</p>
+      <h2 class="title">¿Construimos algo juntos?</h2>
+      <p class="lead">Busco oportunidades como Frontend Developer con TypeScript y React, abierto a roles Full Stack.</p>
+      <div class="actions">
+        <a class="btn btn--primary" routerLink="/contacto">Escríbeme</a>
+        @if (linkedinUrl) {
+          <a class="btn" [href]="linkedinUrl" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in" aria-hidden="true"></i> LinkedIn</a>
+        }
+        @if (githubUrl) {
+          <a class="btn btn--ghost" [href]="githubUrl" target="_blank" rel="noopener noreferrer"><i class="fab fa-github" aria-hidden="true"></i> GitHub</a>
+        }
+      </div>
+    </div>
+  </section>
 </div>
+
+<app-footer></app-footer>
