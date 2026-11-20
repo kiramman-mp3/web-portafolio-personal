@@ -15,8 +15,8 @@ export class CorporateAboutComponent {
   facts: AboutFact[] = [
     { label: 'Ubicación', value: 'Tungurahua, Ecuador' },
     { label: 'Estudios', value: 'Universidad Técnica de Ambato' },
-    { label: 'Frontend', value: 'Angular, TypeScript, Sass' },
-    { label: 'Backend', value: 'Node.js, Express, Prisma' },
-    { label: 'Datos', value: 'PostgreSQL' },
+    { label: 'Frontend', value: 'TypeScript, React, Angular' },
+    { label: 'Backend', value: 'Node.js, Express, NestJS' },
+    { label: 'Datos', value: 'PostgreSQL, MySQL' },
   ];
 }
