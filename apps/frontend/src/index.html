@@ -9,7 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#0a0405">
+  <meta name="theme-color" content="#050910">
   <meta name="description" content="Johan Rodríguez, Software Engineering Student y Frontend Developer en Ecuador. TypeScript y React, abierto a Full Stack. Mira mis proyectos y escríbeme.">
   <link rel="canonical" href="https://madebyjohan.xyz/">
 
@@ -33,27 +33,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:ital,opsz,wght,SOFT,WONK@1,9..144,300..700,100,1&display=swap">
-  <script>
-    // Intro del cielo: sale en cada carga, salvo con movimiento reducido.
-    // intro-active bloquea el scroll; se retira sola a los 9 s por si Angular no arranca.
-    (function () {
-      var root = document.documentElement;
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce) {
-        root.classList.add('skip-intro');
-      } else {
-        root.classList.add('intro-active');
-        setTimeout(function () { root.classList.remove('intro-active'); }, 9000);
-      }
-    })();
-  </script>
   <style>
     html {
-      background-color: #0a0405;
-    }
-
-    html.intro-active {
-      overflow: hidden;
+      background-color: #050910;
     }
   </style>
 </head>

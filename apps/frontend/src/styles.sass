@@ -8,36 +8,36 @@
 :root
   color-scheme: dark
 
-  // Marca, tomada del cielo de la intro: rojo del resplandor y rosa pálido del núcleo
-  // de la galaxia. --purple-* quedó como nombre heredado del tono secundario.
-  --primary: #f2575b
-  --primary-rgb: 242 87 91
-  --purple-bright: #f6b9a8
-  --purple-rgb: 246 185 168
-  --on-primary: #1c0506
+  // Marca, tomada del valle de noche: ámbar de los faroles y azul pálido de la nieve
+  // del Tungurahua. --purple-* quedó como nombre heredado del tono secundario.
+  --primary: #ffb454
+  --primary-rgb: 255 180 84
+  --purple-bright: #bfd9ea
+  --purple-rgb: 191 217 234
+  --on-primary: #1a1204
 
   // Tipografía
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif
   --font-display: var(--font-sans)
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
-  // Títulos: la itálica suave de la intro, con aire de título de película
+  // Títulos: itálica suave, con aire de título de película
   --font-story: 'Fraunces', Georgia, 'Times New Roman', serif
 
-  // Cielo nocturno. Las estrellas las pinta <app-starfield>
-  --bg-color: #0a0405
-  --bg-depth: radial-gradient(70rem 45rem at 50% 120%, rgb(120 20 30 / 0.22), transparent 70%)
+  // Cielo nocturno. El valle 3D lo pinta <app-valley-scene>
+  --bg-color: #050910
+  --bg-depth: radial-gradient(70rem 45rem at 50% 120%, rgb(40 70 60 / 0.25), transparent 70%)
 
-  // Vidrio ahumado: deja ver las estrellas difuminadas sin perder contraste sobre la galaxia
-  --glass-bg: rgb(22 10 12 / 0.55)
-  --glass-bg-strong: rgb(32 14 17 / 0.7)
+  // Vidrio ahumado: deja ver el valle difuminado sin perder contraste
+  --glass-bg: rgb(8 14 22 / 0.58)
+  --glass-bg-strong: rgb(12 20 30 / 0.74)
   --glass-border: rgb(255 255 255 / 0.08)
   --glass-highlight: inset 0 1px 0 rgb(255 255 255 / 0.06)
   --glass-shadow: 0 24px 60px rgb(0 0 0 / 0.5)
   --glass-blur: blur(22px) saturate(140%)
   --radius-panel: 28px
   --radius-card: 20px
-  --text-color: #ede4e2
-  --ink-rgb: 237 228 226
+  --text-color: #e8eef2
+  --ink-rgb: 232 238 242
   --text-muted: rgb(var(--ink-rgb) / 0.72)
   --text-muted-2: rgb(var(--ink-rgb) / 0.55)
   --text-muted-3: rgb(var(--ink-rgb) / 0.45)
@@ -118,7 +118,7 @@ body
 h1, h2, h3, h4
   font-family: var(--font-display)
 
-// Títulos grandes en la itálica de la intro
+// Títulos grandes en itálica
 h1, h2
   font-family: var(--font-story)
   font-style: italic
@@ -148,14 +148,6 @@ main.main-outlet
   backdrop-filter: var(--glass-blur)
   -webkit-backdrop-filter: var(--glass-blur)
 
-
-// —— Intro del cielo ——
-// Mientras dura la intro la página no hace scroll y la entrada del hero espera a que termine
-html.intro-active
-  overflow: hidden
-
-  .hero-text, .hero-terminal, .hero-word, .hero-photo
-    animation-play-state: paused
 
 // —— Animaciones de entrada ——
 // Aparición suave solo del contenido debajo de los títulos.
