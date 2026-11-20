@@ -1,0 +1,299 @@
+@use 'breakpoints' as bp
+
+// La portada tapa el valle 3D hasta que se hace scroll; el inicio va desvaneciéndola
+// con --hero-fade (0 = visible, 1 = desaparecida)
+:host
+  display: block
+
+.hero
+  position: relative
+  min-height: 100vh
+  min-height: 100svh
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 110px 16px 150px
+  overflow: hidden
+  background: radial-gradient(90rem 50rem at 50% 115%, #1d2b3a 0%, #0b1424 45%, #050910 100%)
+  opacity: calc(1 - var(--hero-fade, 0))
+
+.hero-sky
+  position: absolute
+  inset: 0
+  width: 100%
+  height: 100%
+
+// Resplandor de faroles y nieve detrás del nombre, moviéndose despacio
+.hero-glow
+  position: absolute
+  inset: -20%
+  background: radial-gradient(28rem 16rem at 35% 55%, rgb(var(--primary-rgb) / 0.16), transparent 70%), radial-gradient(32rem 18rem at 68% 40%, rgb(var(--purple-rgb) / 0.14), transparent 70%)
+  filter: blur(20px)
+  animation: drift 18s ease-in-out infinite alternate
+
+.hero-volcano
+  position: absolute
+  left: 0
+  right: 0
+  bottom: 0
+  width: 100%
+  height: 20vh
+  // Al bajar, la silueta se hunde y deja ver el valle de verdad
+  transform: translateY(calc(var(--hero-fade, 0) * 12vh))
+
+  .ridge-back
+    fill: #0d1a26
+  .snow
+    fill: #c9dbe8
+    opacity: 0.85
+  .ridge-front
+    fill: #07101a
+
+.hero-content
+  position: relative
+  z-index: 1
+  display: flex
+  flex-direction: column
+  align-items: center
+  text-align: center
+  max-width: 1100px
+  transform: scale(calc(1 + var(--hero-fade, 0) * 0.08))
+
+.name
+  margin: 0 0 22px
+  display: flex
+  flex-wrap: wrap
+  justify-content: center
+  align-items: baseline
+  gap: 0 0.28em
+  font-size: clamp(3.2rem, 10.5vw, 9rem)
+  line-height: 0.95
+  color: #f4f7fa
+
+.first
+  font-family: var(--font-sans)
+  font-style: normal
+  font-weight: 700
+  letter-spacing: -0.04em
+
+.last
+  font-family: var(--font-story)
+  font-style: italic
+  font-weight: 400
+
+// Cada letra sube desde abajo y se enfoca, una tras otra
+.letter
+  display: inline-block
+  opacity: 0
+  filter: blur(10px)
+  transform: translateY(0.45em) rotate(6deg)
+  animation: letter-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards
+  animation-delay: calc(0.15s + var(--i) * 0.06s)
+
+.role, .tagline, .lead, .actions, .contacts, .stack
+  opacity: 0
+  animation: rise 0.8s ease-out forwards
+
+.role
+  margin: 0 0 8px
+  font-family: var(--font-mono)
+  font-size: clamp(0.72rem, 1.4vw, 0.85rem)
+  letter-spacing: 0.22em
+  text-transform: uppercase
+  color: var(--text-muted)
+  animation-delay: 1s
+
+.tagline
+  margin: 0 0 18px
+  min-height: 1.4em
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem)
+  font-weight: 600
+  color: #f4f7fa
+  animation-delay: 1.15s
+
+.typed
+  color: var(--primary)
+
+.caret
+  display: inline-block
+  width: 2px
+  height: 1em
+  margin-left: 2px
+  vertical-align: -0.12em
+  background: var(--primary)
+  animation: blink 1s steps(1) infinite
+
+.lead
+  margin: 0 0 26px
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem)
+  color: var(--text-muted)
+  animation-delay: 1.3s
+
+.actions
+  display: flex
+  flex-wrap: wrap
+  justify-content: center
+  gap: 10px
+  animation-delay: 1.45s
+
+.btn
+  display: inline-flex
+  align-items: center
+  gap: 8px
+  padding: 11px 22px
+  border-radius: 999px
+  font-weight: 600
+  font-size: 0.95rem
+  text-decoration: none
+  color: #f4f7fa
+  background: rgb(255 255 255 / 0.06)
+  border: 1px solid rgb(255 255 255 / 0.16)
+  backdrop-filter: blur(10px)
+  transition: transform 0.2s ease, background 0.2s ease
+
+  &:hover
+    transform: translateY(-2px)
+    background: rgb(255 255 255 / 0.12)
+
+  &--light
+    background: #f4f7fa
+    color: #0b1424
+    border-color: #f4f7fa
+
+    &:hover
+      background: #ffffff
+
+  &--accent
+    background: var(--primary)
+    border-color: var(--primary)
+    color: var(--on-primary)
+
+    &:hover
+      background: var(--primary)
+      filter: brightness(1.08)
+
+.contacts
+  display: flex
+  flex-wrap: wrap
+  justify-content: center
+  gap: 8px 22px
+  padding: 0
+  margin: 22px 0 0
+  list-style: none
+  animation-delay: 1.6s
+
+  a
+    color: var(--text-muted)
+    text-decoration: none
+    font-size: 0.9rem
+    transition: color 0.2s ease
+
+    &:hover
+      color: var(--primary)
+
+  i
+    margin-right: 6px
+
+.stack
+  display: flex
+  gap: 18px
+  padding: 0
+  margin: 22px 0 0
+  list-style: none
+  font-size: 1.5rem
+  color: var(--text-muted-2)
+  animation-delay: 1.75s
+
+  li
+    transition: color 0.2s ease, transform 0.2s ease
+
+    &:hover
+      color: var(--purple-bright)
+      transform: translateY(-2px)
+
+.hero-foot
+  position: absolute
+  z-index: 1
+  left: clamp(16px, 3vw, 40px)
+  right: clamp(16px, 3vw, 40px)
+  bottom: 26px
+  display: flex
+  justify-content: space-between
+  align-items: flex-end
+  gap: 20px
+  opacity: 0
+  animation: rise 0.8s ease-out 2s forwards
+
+  p
+    margin: 0
+    font-size: 0.92rem
+    line-height: 1.5
+    color: var(--text-muted)
+
+.motto
+  max-width: 320px
+
+  em
+    font-family: var(--font-story)
+    font-size: 1.1rem
+    color: #f4f7fa
+
+.explore
+  white-space: nowrap
+
+  span
+    margin: 0 10px
+    opacity: 0.4
+
+  i
+    margin-left: 6px
+    animation: nudge 1.6s ease-in-out infinite
+
+@keyframes letter-in
+  to
+    opacity: 1
+    filter: blur(0)
+    transform: none
+
+@keyframes rise
+  from
+    opacity: 0
+    transform: translateY(14px)
+  to
+    opacity: 1
+    transform: none
+
+@keyframes blink
+  50%
+    opacity: 0
+
+@keyframes nudge
+  50%
+    transform: translateY(4px)
+
+@keyframes drift
+  to
+    transform: translate(4%, -3%)
+
+@media (prefers-reduced-motion: reduce)
+  .letter, .role, .tagline, .lead, .actions, .contacts, .stack, .hero-foot
+    animation: none
+    opacity: 1
+    filter: none
+    transform: none
+
+  .hero-glow, .caret, .explore i
+    animation: none
+
+@include bp.down(md)
+  .hero
+    padding-bottom: 170px
+
+  .hero-foot
+    flex-direction: column
+    align-items: center
+    text-align: center
+
+  .motto
+    display: none

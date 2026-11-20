@@ -21,7 +21,7 @@ interface Keyframe {
 
 /** Un fotograma por capítulo de la página de inicio, en el mismo orden. */
 export const KEYFRAMES: Keyframe[] = [
-  { id: 'inicio', position: [0, 175, 300], target: [0, 70, -150], night: 0 },
+  { id: 'valle', position: [0, 175, 300], target: [0, 70, -150], night: 0 },
   { id: 'sobre-mi', position: [150, 92, 10], target: [0, 55, -150], night: 0.1 },
   { id: 'jones', position: [-28, 24, 8], target: [-55, 2, -30], night: 0.3 },
   { id: 'karen', position: [12, 24, 84], target: [37, 5, 54], night: 0.45 },

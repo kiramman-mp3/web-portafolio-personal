@@ -251,3 +251,14 @@ h1.title
 
   .facts
     grid-template-columns: 1fr
+
+// La portada queda fija mientras se desvanece, así el valle aparece "detrás" de ella
+.hero-wrap
+  position: sticky
+  top: 0
+  z-index: 0
+  pointer-events: auto
+
+.journey
+  position: relative
+  z-index: 1

@@ -1,26 +1,15 @@
+<div #heroWrap class="hero-wrap">
+  <app-home-hero></app-home-hero>
+</div>
+
 <!-- Cada capítulo es un fotograma del valle 3D (ver KEYFRAMES en valley-world.ts), en el mismo orden -->
 <div class="journey">
-  <section #chapter id="inicio" class="chapter chapter--intro">
+  <section #chapter id="valle" class="chapter chapter--intro">
     <div class="card card--hero">
       <p class="kicker">Tungurahua, Ecuador</p>
-      <h1 class="title">Johan Rodríguez</h1>
-      <p class="role">Software Engineering Student · Frontend Developer</p>
-      <p class="lead">
-        TypeScript · React · Open to Full Stack. Construyo sistemas web y móviles de punta a punta:
-        base de datos, API, interfaz, despliegue y documentación.
-      </p>
-      @if (availability) {
-        <p class="availability"><span class="dot" aria-hidden="true"></span>{{ availability }}</p>
-      }
-      <div class="actions">
-        <a class="btn btn--primary" routerLink="/contacto">Escríbeme</a>
-        <a class="btn" routerLink="/proyectos">Ver proyectos</a>
-        @if (cvUrl) {
-          <a class="btn btn--ghost" [href]="cvUrl" target="_blank" rel="noopener noreferrer">Descargar CV</a>
-        }
-      </div>
+      <h2 class="title">Bajemos al valle</h2>
+      <p class="lead">Aquí vivo y aquí están las organizaciones para las que construyo software.</p>
     </div>
-    <p class="scroll-hint" aria-hidden="true">Desliza para bajar al valle <i class="fas fa-arrow-down"></i></p>
   </section>
 
   <section #chapter id="sobre-mi" class="chapter">
