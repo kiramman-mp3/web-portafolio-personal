@@ -69,7 +69,8 @@ export class StarfieldComponent implements OnDestroy {
     const sky = document.createElement('canvas');
     sky.width = canvas.width;
     sky.height = canvas.height;
-    const ctx = sky.getContext('2d')!;
+    const ctx = sky.getContext('2d');
+    if (!ctx) return;
     ctx.globalAlpha = 0.55;
     ctx.drawImage(paintMilkyWay(this.width, this.height, this.dpr), 0, 0);
     ctx.globalAlpha = 1;

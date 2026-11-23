@@ -30,7 +30,8 @@ export function paintMilkyWay(width: number, height: number, dpr: number): HTMLC
   const off = document.createElement('canvas');
   off.width = Math.round(width * dpr);
   off.height = Math.round(height * dpr);
-  const ctx = off.getContext('2d')!;
+  const ctx = off.getContext('2d');
+  if (!ctx) return off;
   ctx.scale(dpr, dpr);
 
   // Banda diagonal, de abajo a la izquierda hacia arriba a la derecha
