@@ -31,6 +31,7 @@ model Projects {
   technologies     String[] @db.VarChar(255)
   status           String   @db.VarChar(50) // 'completado' | 'en-progreso' | 'planificado'
   image            String   @db.Text
+  images           String[] @default([])
   githubUrl        String?  @db.VarChar(255)
   webUrl           String?  @db.VarChar(255)
   backendUrl       String?  @db.VarChar(255)

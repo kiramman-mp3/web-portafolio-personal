@@ -18,6 +18,7 @@ export class ProjectModel {
         technologies: string[];
         status: string;
         image: string;
+        images: string[];
         githubUrl?: string | null;
         webUrl?: string | null;
         backendUrl?: string | null;
@@ -34,6 +35,7 @@ export class ProjectModel {
         technologies?: string[];
         status?: string;
         image?: string;
+        images?: string[];
         githubUrl?: string | null;
         webUrl?: string | null;
         backendUrl?: string | null;

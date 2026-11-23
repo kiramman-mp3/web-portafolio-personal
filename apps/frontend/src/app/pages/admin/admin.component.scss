@@ -883,6 +883,148 @@
   }
 }
 
+.images-count-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgb(var(--primary-rgb) / 0.12);
+  border: 1px solid rgb(var(--primary-rgb) / 0.25);
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.image-url-add-row {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    flex: 1;
+  }
+
+  .btn-add-custom-tech {
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    color: var(--text-color);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgb(var(--primary-rgb) / 0.12);
+      border-color: rgb(var(--primary-rgb) / 0.3);
+      color: var(--primary);
+    }
+  }
+}
+
+.project-images-manager-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.project-image-item {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--inset-bg);
+  display: flex;
+  flex-direction: column;
+
+  &.is-cover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px rgb(var(--primary-rgb) / 0.3);
+  }
+}
+
+.project-image-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--inset-bg);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cover-badge,
+  .order-badge {
+    position: absolute;
+    top: 6px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .cover-badge {
+    left: 6px;
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  .order-badge {
+    right: 6px;
+    background: rgb(15 17 26 / 0.78);
+    color: #ffffff;
+  }
+}
+
+.project-image-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  padding: 6px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+
+  button {
+    flex: 1;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--field-border);
+    background: var(--field-bg);
+    color: rgb(var(--ink-rgb) / 0.8);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: rgb(var(--primary-rgb) / 0.14);
+      border-color: rgb(var(--primary-rgb) / 0.35);
+      color: var(--primary);
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    &.btn-img-remove:hover {
+      background: rgb(var(--danger-rgb) / 0.15);
+      border-color: rgb(var(--danger-rgb) / 0.35);
+      color: var(--danger);
+    }
+  }
+}
+
 /* Links form layout */
 .links-form-grid {
   display: grid;

@@ -36,7 +36,10 @@
     <div class="projects-list-grid" *ngIf="!isLoading && !hasError">
       <div *ngFor="let project of filteredProjects" class="project-detail-card">
         <div class="card-image-wrap">
-          <img [src]="project.image" [alt]="project.title" />
+          <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
+          <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
+            <i class="fas fa-images"></i> {{ getImageCount(project) }}
+          </span>
         </div>
 
         <div class="card-body">

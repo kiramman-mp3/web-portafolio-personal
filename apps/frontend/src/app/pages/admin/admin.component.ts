@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
-import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { ProjectsService, Project, getProjectImages } from '../../shared/services/projects.service';
 import { CertificatesService, Certificate } from '../../shared/services/certificates.service';
 import { ContactService, ContactMessage } from '../../shared/services/contact.service';
 import { TECH_MASTER_LIST } from '../../shared/constants/tech-list';
@@ -63,12 +63,14 @@ export class AdminComponent implements OnInit {
     shortDescription: '',
     description: '',
     image: '',
+    images: [] as string[],
     status: 'completado' as 'completado' | 'en-progreso' | 'planificado',
     githubUrl: '',
     webUrl: '',
     backendUrl: '',
     apkUrl: ''
   };
+  newProjectImageUrl = '';
 
   certificateForm = {
     id: '',
@@ -166,55 +168,113 @@ export class AdminComponent implements OnInit {
   }
 
   // IMAGE UPLOAD WITH COMPRESSION
+  private compressImageFile(file: File, maxW = 800, maxH = 600, quality = 0.75): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxW) {
+              height *= maxW / width;
+              width = maxW;
+            }
+          } else {
+            if (height > maxH) {
+              width *= maxH / height;
+              height = maxH;
+            }
+          }
+
+          canvas.width = Math.round(width);
+          canvas.height = Math.round(height);
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Canvas context unavailable'));
+            return;
+          }
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   onImageSelected(event: any, type: 'service' | 'project' | 'certificate'): void {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
+    this.compressImageFile(file).then((compressedBase64) => {
+      if (type === 'service') {
+        this.serviceForm.imageUrl = compressedBase64;
+      } else if (type === 'project') {
+        this.projectForm.images.push(compressedBase64);
+        this.projectForm.image = this.projectForm.images[0] || '';
+      } else {
+        this.certificateForm.image = compressedBase64;
+      }
+      this.cdr.markForCheck();
+    }).catch((err) => console.error('Image compression failed', err));
+  }
 
-        // Compress image resolution to safe size (max 800px width/height)
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 600;
+  async onProjectImagesSelected(event: any): Promise<void> {
+    const files: FileList | null = event.target.files;
+    if (!files || files.length === 0) return;
 
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
+    for (const file of Array.from(files)) {
+      try {
+        const compressed = await this.compressImageFile(file, 1280, 800, 0.8);
+        this.projectForm.images.push(compressed);
+      } catch (err) {
+        console.error('Error compressing project image:', err);
+      }
+    }
+    this.projectForm.image = this.projectForm.images[0] || '';
+    event.target.value = '';
+    this.cdr.markForCheck();
+  }
 
-        canvas.width = width;
-        canvas.height = height;
+  addProjectImageUrl(): void {
+    const trimmed = this.newProjectImageUrl.trim();
+    if (!trimmed) return;
+    if (!this.projectForm.images.includes(trimmed)) {
+      this.projectForm.images.push(trimmed);
+      this.projectForm.image = this.projectForm.images[0] || '';
+    }
+    this.newProjectImageUrl = '';
+  }
 
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          // Compress to JPEG with 0.75 quality factor
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
-          if (type === 'service') {
-            this.serviceForm.imageUrl = compressedBase64;
-          } else if (type === 'project') {
-            this.projectForm.image = compressedBase64;
-          } else {
-            this.certificateForm.image = compressedBase64;
-          }
-          this.cdr.markForCheck();
-        }
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+  removeProjectImage(index: number): void {
+    this.projectForm.images.splice(index, 1);
+    this.projectForm.image = this.projectForm.images[0] || '';
+  }
+
+  moveProjectImage(index: number, delta: number): void {
+    const target = index + delta;
+    if (target < 0 || target >= this.projectForm.images.length) return;
+    const [item] = this.projectForm.images.splice(index, 1);
+    this.projectForm.images.splice(target, 0, item);
+    this.projectForm.image = this.projectForm.images[0] || '';
+  }
+
+  setProjectCoverImage(index: number): void {
+    if (index <= 0 || index >= this.projectForm.images.length) return;
+    const [item] = this.projectForm.images.splice(index, 1);
+    this.projectForm.images.unshift(item);
+    this.projectForm.image = this.projectForm.images[0] || '';
+  }
+
+  getProjectImageCount(project: Project): number {
+    return getProjectImages(project).length;
   }
 
   // TECH MULTISELECT ACTIONS
@@ -310,12 +370,14 @@ export class AdminComponent implements OnInit {
   openAddProject(): void {
     this.isEditingProject = false;
     this.selectedTechnologies = [];
+    this.newProjectImageUrl = '';
     this.projectForm = {
       id: '',
       title: '',
       shortDescription: '',
       description: '',
       image: '',
+      images: [],
       status: 'completado',
       githubUrl: '',
       webUrl: '',
@@ -328,12 +390,15 @@ export class AdminComponent implements OnInit {
   openEditProject(project: Project): void {
     this.isEditingProject = true;
     this.selectedTechnologies = [...(project.technologies || [])];
+    this.newProjectImageUrl = '';
+    const projectImages = getProjectImages(project);
     this.projectForm = {
       id: project.id,
       title: project.title,
       shortDescription: project.shortDescription || '',
       description: project.description,
-      image: project.image,
+      image: projectImages[0] || project.image,
+      images: [...projectImages],
       status: project.status,
       githubUrl: project.githubUrl || '',
       webUrl: project.webUrl || '',
@@ -344,11 +409,26 @@ export class AdminComponent implements OnInit {
   }
 
   saveProject(): void {
+    // Allow saving if the user typed a URL without pressing "Añadir"
+    if (this.newProjectImageUrl.trim()) {
+      this.addProjectImageUrl();
+    }
+
+    const cleanedImages = this.projectForm.images
+      .map(img => img.trim())
+      .filter(img => img.length > 0);
+
+    if (cleanedImages.length === 0) {
+      alert('Debes agregar al menos una imagen para el proyecto.');
+      return;
+    }
+
     const projectData = {
       title: this.projectForm.title,
       shortDescription: this.projectForm.shortDescription,
       description: this.projectForm.description,
-      image: this.projectForm.image,
+      image: cleanedImages[0],
+      images: cleanedImages,
       technologies: this.selectedTechnologies,
       status: this.projectForm.status,
       githubUrl: this.projectForm.githubUrl || null,

@@ -9,7 +9,10 @@
     <div class="projects-grid" *ngIf="!hasError">
       <div *ngFor="let project of featuredProjects" class="project-card">
         <div class="project-image">
-          <img [src]="project.image" [alt]="project.title" />
+          <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
+          <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
+            <i class="fas fa-images"></i> {{ getImageCount(project) }}
+          </span>
         </div>
         <div class="project-content">
           <div class="project-header">

@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { ProjectsService, Project, getProjectCover, getProjectImages } from '../../shared/services/projects.service';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 
 @Component({
@@ -43,6 +43,14 @@ export class FeaturedProjectsComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  getCoverImage(project: Project): string {
+    return getProjectCover(project);
+  }
+
+  getImageCount(project: Project): number {
+    return getProjectImages(project).length;
   }
 
   getStatusBadgeClass(status: string): string {

@@ -153,7 +153,24 @@ export const TECH_MASTER_LIST: TechItem[] = [
   { name: 'Internet Of Things', icon: 'fas fa-wifi', color: '#00bceb' },
   { name: 'Digital Transformation', icon: 'fas fa-network-wired', color: '#6366f1' },
   { name: 'Networking', icon: 'fas fa-network-wired', color: '#00bceb' },
-  { name: 'AI/ML', icon: 'fas fa-brain', color: '#ff6f00' }
+  { name: 'AI/ML', icon: 'fas fa-brain', color: '#ff6f00' },
+
+  // Plataformas, Escritorio, Mapas e Infraestructura adicional
+  { name: 'Odoo', icon: 'fas fa-cubes', color: '#714b67' },
+  { name: 'Traccar', icon: 'fas fa-location-dot', color: '#1a73e8' },
+  { name: 'Moodle', icon: 'fas fa-graduation-cap', color: '#f98012' },
+  { name: 'Tauri', icon: 'fas fa-window-restore', color: '#24c8db' },
+  { name: 'Leaflet', icon: 'fas fa-map-location-dot', color: '#199900' },
+  { name: 'pgvector', icon: 'fas fa-diagram-project', color: '#4169e1' },
+  { name: 'Gemini', icon: 'fas fa-sparkles', color: '#4285f4' },
+  { name: 'OpenRouter', icon: 'fas fa-robot', color: '#8b5cf6' },
+  { name: 'IndexedDB', icon: 'fas fa-hard-drive', color: '#f59e0b' },
+  { name: 'Caddy', icon: 'fas fa-shield-halved', color: '#22c55e' },
+  { name: 'Cloudflare', icon: 'fab fa-cloudflare', color: '#f38020' },
+  { name: 'jsPDF', icon: 'fas fa-file-pdf', color: '#dc2626' },
+  { name: 'WHPX', icon: 'fab fa-windows', color: '#0078d4' },
+  { name: 'JWT', icon: 'fas fa-key', color: '#d63aff' },
+  { name: 'PHPMailer', icon: 'fas fa-envelope', color: '#777bb4' }
 
 ];
 

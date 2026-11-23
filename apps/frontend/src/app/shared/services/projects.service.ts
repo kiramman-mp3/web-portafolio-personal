@@ -12,10 +12,28 @@ export interface Project {
   technologies: string[];
   status: 'completado' | 'en-progreso' | 'planificado';
   image: string;
+  images?: string[];
   githubUrl?: string;
   webUrl?: string;
   backendUrl?: string;
   apkUrl?: string;
+}
+
+export function getProjectImages(project?: Pick<Project, 'image' | 'images'> | null): string[] {
+  if (!project) return [];
+  const list = Array.isArray(project.images)
+    ? project.images.map(img => img?.trim()).filter((img): img is string => Boolean(img))
+    : [];
+  if (list.length > 0) {
+    return list;
+  }
+  const cover = project.image?.trim();
+  return cover ? [cover] : [];
+}
+
+export function getProjectCover(project?: Pick<Project, 'image' | 'images'> | null): string {
+  const images = getProjectImages(project);
+  return images[0] || '';
 }
 
 @Injectable({

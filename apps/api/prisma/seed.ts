@@ -73,6 +73,7 @@ async function main() {
           technologies: ['Laravel', 'PHP', 'MySQL', 'Blade', 'JavaScript'],
           status: 'completado',
           image: '/img/Web.png',
+          images: ['/img/Web.png'],
           githubUrl: 'https://github.com/ArielParedesLozada/Proyecto-Final-Web'
         },
         {
@@ -81,6 +82,7 @@ async function main() {
           technologies: ['C#', '.NET Core', 'JavaScript', 'React', 'Docker'],
           status: 'en-progreso',
           image: '/img/Distribuidas.png',
+          images: ['/img/Distribuidas.png'],
           githubUrl: 'https://github.com/ArielParedesLozada/Proyecto-Final-Distribuidas'
         },
         {
@@ -89,6 +91,7 @@ async function main() {
           technologies: ['TypeScript', 'Node.js', 'PostgreSQL', 'React', 'AWS'],
           status: 'completado',
           image: '/img/GPIS.png',
+          images: ['/img/GPIS.png'],
           githubUrl: 'https://github.com/ArielParedesLozada/ProyectoGPIS'
         }
       ]

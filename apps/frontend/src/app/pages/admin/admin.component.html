@@ -92,6 +92,7 @@
               <tr>
                 <th>Título</th>
                 <th>Estado</th>
+                <th>Imágenes</th>
                 <th>Descripción</th>
                 <th>Acciones</th>
               </tr>
@@ -102,6 +103,11 @@
                 <td>
                   <span class="status-badge" [ngClass]="p.status">
                     {{ p.status }}
+                  </span>
+                </td>
+                <td>
+                  <span class="images-count-pill">
+                    <i class="fas fa-images"></i> {{ getProjectImageCount(p) }}
                   </span>
                 </td>
                 <td class="desc-cell">{{ p.shortDescription }}</td>
@@ -293,21 +299,51 @@
           
           <!-- Image upload and state -->
           <div class="form-card">
-            <h3 class="card-subtitle"><i class="fas fa-image"></i> Imagen y Estado</h3>
+            <h3 class="card-subtitle"><i class="fas fa-images"></i> Galería y Estado</h3>
             
             <div class="form-group">
-              <label>Imagen del Proyecto *</label>
+              <label>Imágenes del Proyecto * (la primera es la portada)</label>
               <div class="image-upload-wrapper">
                 <div class="file-select-area">
                   <i class="fas fa-cloud-upload-alt"></i>
-                  <span>Subir Imagen (Compresión automática)</span>
-                  <input type="file" (change)="onImageSelected($event, 'project')" accept="image/*" class="file-input" />
+                  <span>Subir una o varias imágenes (Compresión automática)</span>
+                  <input type="file" multiple (change)="onProjectImagesSelected($event)" accept="image/*" class="file-input" />
                 </div>
-                <div class="or-separator">O introduce una URL directa:</div>
-                <input type="text" [(ngModel)]="projectForm.image" name="image" placeholder="https://..." />
+                <div class="or-separator">O añade una URL directa:</div>
+                <div class="image-url-add-row">
+                  <input
+                    type="text"
+                    [(ngModel)]="newProjectImageUrl"
+                    name="newProjectImageUrl"
+                    placeholder="https://..."
+                    (keydown.enter)="$event.preventDefault(); addProjectImageUrl()"
+                  />
+                  <button type="button" (click)="addProjectImageUrl()" class="btn-add-custom-tech">Añadir</button>
+                </div>
               </div>
-              <div *ngIf="projectForm.image" class="image-preview-thumbnail-full">
-                <img [src]="projectForm.image" alt="Preview" />
+
+              <div *ngIf="projectForm.images.length > 0" class="project-images-manager-grid">
+                <div *ngFor="let img of projectForm.images; let i = index" class="project-image-item" [class.is-cover]="i === 0">
+                  <div class="project-image-thumb">
+                    <img [src]="img" [alt]="'Imagen ' + (i + 1)" />
+                    <span *ngIf="i === 0" class="cover-badge">Portada</span>
+                    <span class="order-badge">#{{ i + 1 }}</span>
+                  </div>
+                  <div class="project-image-actions">
+                    <button type="button" (click)="moveProjectImage(i, -1)" [disabled]="i === 0" title="Mover antes">
+                      <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button type="button" (click)="moveProjectImage(i, 1)" [disabled]="i === projectForm.images.length - 1" title="Mover después">
+                      <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button type="button" *ngIf="i > 0" (click)="setProjectCoverImage(i)" title="Usar como portada">
+                      <i class="fas fa-star"></i>
+                    </button>
+                    <button type="button" class="btn-img-remove" (click)="removeProjectImage(i)" title="Eliminar imagen">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 

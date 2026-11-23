@@ -29,11 +29,65 @@
       <!-- Split Layout Grid -->
       <div class="detail-grid">
         
-        <!-- Left Column: Media and Detailed Description -->
+        <!-- Left Column: Media Gallery and Detailed Description -->
         <div class="detail-main-col">
-          <div class="detail-image-wrapper">
-            <img [src]="project.image" [alt]="project.title" />
-            <div class="image-overlay-glow"></div>
+          <div class="detail-gallery" *ngIf="galleryImages.length > 0">
+            <div
+              class="detail-image-wrapper"
+              (click)="openLightbox()"
+              (touchstart)="onTouchStart($event)"
+              (touchend)="onTouchEnd($event)"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="openLightbox()"
+              aria-label="Ampliar imagen del proyecto"
+            >
+              <img [src]="activeImage" [alt]="project.title + ' - Imagen ' + (currentImageIndex + 1)" />
+              <div class="image-overlay-glow"></div>
+
+              <button
+                *ngIf="galleryImages.length > 1"
+                type="button"
+                class="gallery-nav-btn prev-btn"
+                (click)="prevImage($event)"
+                aria-label="Imagen anterior"
+              >
+                <i class="fas fa-chevron-left"></i>
+              </button>
+
+              <button
+                *ngIf="galleryImages.length > 1"
+                type="button"
+                class="gallery-nav-btn next-btn"
+                (click)="nextImage($event)"
+                aria-label="Imagen siguiente"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+
+              <div class="gallery-toolbar">
+                <span *ngIf="galleryImages.length > 1" class="gallery-counter">
+                  <i class="fas fa-images"></i> {{ currentImageIndex + 1 }} / {{ galleryImages.length }}
+                </span>
+                <span class="gallery-zoom-hint" title="Ver en pantalla completa">
+                  <i class="fas fa-expand"></i>
+                </span>
+              </div>
+            </div>
+
+            <div *ngIf="galleryImages.length > 1" class="gallery-thumbnails" role="tablist" aria-label="Miniaturas del proyecto">
+              <button
+                *ngFor="let img of galleryImages; let i = index"
+                type="button"
+                class="gallery-thumb-btn"
+                [class.active]="i === currentImageIndex"
+                (click)="selectImage(i)"
+                [attr.aria-label]="'Ver imagen ' + (i + 1)"
+                [attr.aria-selected]="i === currentImageIndex"
+              >
+                <img [src]="img" [alt]="project.title + ' miniatura ' + (i + 1)" loading="lazy" />
+              </button>
+            </div>
           </div>
           
           <div class="detail-description-box">
@@ -102,4 +156,39 @@
 
   </div>
 </section>
+
+<!-- Fullscreen Lightbox -->
+<div *ngIf="isLightboxOpen && project && activeImage" class="gallery-lightbox" (click)="closeLightbox()" role="dialog" aria-modal="true" [attr.aria-label]="'Galería de ' + project.title">
+  <button type="button" class="lightbox-close" (click)="closeLightbox()" aria-label="Cerrar vista ampliada">
+    <i class="fas fa-times"></i>
+  </button>
+
+  <button
+    *ngIf="galleryImages.length > 1"
+    type="button"
+    class="lightbox-nav prev-btn"
+    (click)="prevImage($event)"
+    aria-label="Imagen anterior"
+  >
+    <i class="fas fa-chevron-left"></i>
+  </button>
+
+  <div class="lightbox-content" (click)="$event.stopPropagation()" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+    <img [src]="activeImage" [alt]="project.title + ' - Imagen ' + (currentImageIndex + 1)" />
+    <div *ngIf="galleryImages.length > 1" class="lightbox-caption">
+      {{ project.title }} — {{ currentImageIndex + 1 }} / {{ galleryImages.length }}
+    </div>
+  </div>
+
+  <button
+    *ngIf="galleryImages.length > 1"
+    type="button"
+    class="lightbox-nav next-btn"
+    (click)="nextImage($event)"
+    aria-label="Imagen siguiente"
+  >
+    <i class="fas fa-chevron-right"></i>
+  </button>
+</div>
+
 <app-footer></app-footer>

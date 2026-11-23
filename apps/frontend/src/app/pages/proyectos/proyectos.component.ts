@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ProjectsService, Project } from '../../shared/services/projects.service';
+import { ProjectsService, Project, getProjectCover, getProjectImages } from '../../shared/services/projects.service';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
@@ -55,6 +55,14 @@ export class ProyectosComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  getCoverImage(project: Project): string {
+    return getProjectCover(project);
+  }
+
+  getImageCount(project: Project): number {
+    return getProjectImages(project).length;
   }
 
   getTechIcon(tech: string): string {
