@@ -1,203 +1,53 @@
-<section
-  class="featured-projects-section"
-  [class.is-scroll-pinned-mode]="isScrollPinEnabled"
-  id="proyectos-destacados"
-  aria-label="Galería interactiva de proyectos"
-  (keydown)="onCarouselKeyDown($event)"
->
-  <div
-    #scrollRunway
-    class="wave-scroll-runway"
-    [class.has-runway]="isScrollPinEnabled"
-    [style.--project-count]="featuredProjects.length || 1"
-  >
-    <div class="wave-sticky-viewport" [class.is-pinned]="isPinned">
-      <div class="projects-container">
-        <a href="#proyectos-controles" class="skip-carousel-link">Saltar a los controles de proyectos</a>
-
-        <div class="section-header home-section-header wave-section-header">
-          <div class="header-copy">
-            <p class="chapter-kicker">04 · Obra</p>
-            <h2 class="section-title">Proyectos</h2>
-          </div>
-        </div>
+<section class="featured-projects-section" id="proyectos-destacados">
+  <div class="projects-container">
+    <div class="section-header home-section-header">
+      <h2 class="section-title">Proyectos</h2>
+    </div>
 
     <app-connection-error *ngIf="hasError" (retry)="loadProjects()"></app-connection-error>
 
-    <!-- Loading Skeleton -->
-    <div *ngIf="!hasError && isLoading" class="wave-loading" role="status" aria-live="polite">
-      <div class="premium-spinner"></div>
-      <p>Cargando galería de proyectos...</p>
-    </div>
-
-    <!-- Real 3D Inertial Wave Carousel -->
-    <div
-      *ngIf="!hasError && !isLoading && featuredProjects.length > 0 && !isWebGLUnavailable"
-      class="wave-carousel-shell"
-    >
-      <div
-        #stageContainer
-        class="wave-stage"
-        tabindex="0"
-        role="region"
-        aria-roledescription="carrusel 3D"
-        aria-label="Carrusel 3D de proyectos: arrastra o usa las teclas izquierda y derecha"
-      >
-        <canvas
-          #waveCanvas
-          class="wave-canvas"
-          [class.is-ready]="isCanvasReady"
-          aria-hidden="true"
-        ></canvas>
-
-        <div *ngIf="!isCanvasReady" class="stage-boot-overlay" aria-hidden="true">
-          <div class="premium-spinner"></div>
+    <div class="projects-grid" *ngIf="!hasError">
+      <div *ngFor="let project of featuredProjects" class="project-card">
+        <div class="project-image">
+          <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
+          <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
+            <i class="fas fa-images"></i> {{ getImageCount(project) }}
+          </span>
         </div>
-      </div>
-
-      <!-- Selected Project Readout & Controls -->
-      <div id="proyectos-controles" class="wave-controls-bar">
-        <div class="wave-nav-row">
-          <button
-            type="button"
-            class="wave-arrow-btn"
-            (click)="prevProject()"
-            aria-label="Proyecto anterior"
-          >
-            <i class="fas fa-chevron-left" aria-hidden="true"></i>
-          </button>
-
-          <div
-            class="active-project-info"
-            [class.is-open]="isDetailCardOpen"
-            aria-live="polite"
-            aria-atomic="true"
-            *ngIf="activeProject as project"
-          >
-            <div class="active-meta-row">
-              <span class="active-counter">
-                {{ (selectedIndex + 1).toString().padStart(2, '0') }} / {{ featuredProjects.length.toString().padStart(2, '0') }}
-              </span>
-              <span class="project-badge" [ngClass]="getStatusBadgeClass(project.status)">
-                <i class="fas" [ngClass]="getStatusIcon(project.status)" aria-hidden="true"></i>
-                <span>{{ getStatusText(project.status) }}</span>
-              </span>
-              <span *ngIf="getImageCount(project) > 1" class="active-images-pill">
-                <i class="fas fa-images" aria-hidden="true"></i> {{ getImageCount(project) }} fotos
-              </span>
+        <div class="project-content">
+          <div class="project-header">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <div class="project-badge" [ngClass]="getStatusBadgeClass(project.status)">
+              <i class="fas" [ngClass]="getStatusIcon(project.status)"></i>
+              <span>{{ getStatusText(project.status) }}</span>
             </div>
-
-            <h3 class="active-project-title">{{ project.title }}</h3>
-            <p class="active-project-desc">{{ project.shortDescription }}</p>
-
-            <div class="active-tech-row">
-              <span *ngFor="let tech of project.technologies.slice(0, 5)" class="tech-tag">
+          </div>
+          <p class="project-description">{{ project.shortDescription }}</p>
+          <div class="project-footer">
+            <div class="project-tech">
+              <span *ngFor="let tech of project.technologies.slice(0, 3)" class="tech-tag">
                 {{ tech }}
               </span>
             </div>
-
-            <div class="active-actions-row">
-              <a [routerLink]="['/proyectos', project.id]" class="wave-cta-primary">
-                Ver proyecto <i class="fas fa-arrow-right" aria-hidden="true"></i>
-              </a>
-              <a
-                *ngIf="project.webUrl"
-                [href]="project.webUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="wave-cta-secondary"
-              >
-                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Demo en vivo
-              </a>
-              <a
-                *ngIf="project.githubUrl"
-                [href]="project.githubUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="wave-cta-secondary"
-              >
-                <i class="fab fa-github" aria-hidden="true"></i> Código
-              </a>
-            </div>
           </div>
-
-          <button
-            type="button"
-            class="wave-arrow-btn"
-            (click)="nextProject()"
-            aria-label="Proyecto siguiente"
-          >
-            <i class="fas fa-chevron-right" aria-hidden="true"></i>
-          </button>
+          <div class="project-links">
+            <a [routerLink]="['/proyectos', project.id]">Detalles</a>
+            <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-github" aria-hidden="true"></i> Código
+            </a>
+            <a *ngIf="project.webUrl" [href]="project.webUrl" target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Demo
+            </a>
+          </div>
         </div>
-
-        <!-- Named Dot Indicators -->
-        <nav class="wave-dots" aria-label="Seleccionar proyecto">
-          <button
-            *ngFor="let p of featuredProjects; let i = index"
-            type="button"
-            class="wave-dot"
-            [class.is-active]="i === selectedIndex"
-            [attr.aria-current]="i === selectedIndex ? 'true' : null"
-            [attr.aria-label]="'Mostrar proyecto ' + (i + 1) + ': ' + p.title"
-            [title]="p.title"
-            (click)="selectProjectDot(i)"
-          ></button>
-        </nav>
       </div>
     </div>
 
-    <!-- Honest Static Fallback when WebGL is Unavailable -->
-    <div
-      *ngIf="!hasError && !isLoading && featuredProjects.length > 0 && isWebGLUnavailable"
-      id="proyectos-controles"
-      class="static-fallback-showcase"
-    >
-      <div class="projects-grid">
-        <article *ngFor="let project of featuredProjects" class="project-card">
-          <div class="project-image">
-            <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
-            <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
-              <i class="fas fa-images" aria-hidden="true"></i> {{ getImageCount(project) }}
-            </span>
-          </div>
-          <div class="project-content">
-            <div class="project-header">
-              <h3 class="project-title">{{ project.title }}</h3>
-              <div class="project-badge" [ngClass]="getStatusBadgeClass(project.status)">
-                <i class="fas" [ngClass]="getStatusIcon(project.status)" aria-hidden="true"></i>
-                <span>{{ getStatusText(project.status) }}</span>
-              </div>
-            </div>
-            <p class="project-description">{{ project.shortDescription }}</p>
-            <div class="project-footer">
-              <div class="project-tech">
-                <span *ngFor="let tech of project.technologies.slice(0, 3)" class="tech-tag">
-                  {{ tech }}
-                </span>
-              </div>
-            </div>
-            <div class="project-links">
-              <a [routerLink]="['/proyectos', project.id]">Detalles</a>
-              <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-github" aria-hidden="true"></i> Código
-              </a>
-              <a *ngIf="project.webUrl" [href]="project.webUrl" target="_blank" rel="noopener noreferrer">
-                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Demo
-              </a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </div>
-
-        <!-- View All Button -->
-        <div class="view-all-container">
-          <a routerLink="/proyectos" class="btn-view-all">
-            Ver todos los proyectos ({{ featuredProjects.length || 19 }})
-          </a>
-        </div>
-      </div>
+    <!-- View All Button -->
+    <div class="view-all-container">
+      <a routerLink="/proyectos" class="btn-view-all">
+        Ver todos los proyectos
+      </a>
     </div>
   </div>
 </section>
