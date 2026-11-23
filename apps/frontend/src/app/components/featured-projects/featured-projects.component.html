@@ -1,44 +1,62 @@
 <section
   class="featured-projects-section"
+  [class.is-scroll-pinned-mode]="isScrollPinEnabled"
   id="proyectos-destacados"
   aria-label="Galería interactiva de proyectos"
   (keydown)="onCarouselKeyDown($event)"
 >
-  <div class="projects-container">
-    <a href="#proyectos-controles" class="skip-carousel-link">Saltar a los controles de proyectos</a>
+  <div
+    #scrollRunway
+    class="wave-scroll-runway"
+    [class.has-runway]="isScrollPinEnabled"
+    [style.--project-count]="featuredProjects.length || 1"
+  >
+    <div class="wave-sticky-viewport" [class.is-pinned]="isPinned">
+      <div class="projects-container">
+        <a href="#proyectos-controles" class="skip-carousel-link">Saltar a los controles de proyectos</a>
 
-    <div class="section-header home-section-header wave-section-header">
-      <div class="header-copy">
-        <p class="chapter-kicker">04 · Obra</p>
-        <h2 class="section-title">Proyectos</h2>
-        <p class="wave-subtitle">
-          Arrastra horizontalmente, usa las flechas o selecciona una tarjeta para explorar mis {{ featuredProjects.length || 19 }} proyectos en perspectiva 3D.
-        </p>
-      </div>
+        <div class="section-header home-section-header wave-section-header">
+          <div class="header-copy">
+            <p class="chapter-kicker">04 · Obra</p>
+            <h2 class="section-title">Proyectos</h2>
+            <p class="wave-subtitle">
+              Desliza hacia abajo para recorrer los {{ featuredProjects.length || 19 }} proyectos en diagonal 3D, o usa las flechas y el arrastre.
+            </p>
+          </div>
 
-      <!-- Motion controls placed cleanly outside the 3D artwork -->
-      <div class="motion-controls" *ngIf="!hasError && !isLoading && featuredProjects.length > 0 && !isWebGLUnavailable">
-        <button
-          type="button"
-          class="motion-btn"
-          (click)="togglePause()"
-          [attr.aria-pressed]="isPaused"
-          [attr.aria-label]="isPaused ? 'Reanudar animación 3D' : 'Pausar animación 3D'"
-        >
-          <i class="fas" [ngClass]="isPaused ? 'fa-play' : 'fa-pause'" aria-hidden="true"></i>
-          <span>{{ isPaused ? 'Reanudar' : 'Pausar' }}</span>
-        </button>
-        <button
-          type="button"
-          class="motion-btn"
-          (click)="resetCarousel()"
-          aria-label="Reiniciar carrusel al primer proyecto"
-        >
-          <i class="fas fa-rotate-left" aria-hidden="true"></i>
-          <span>Reiniciar</span>
-        </button>
-      </div>
-    </div>
+          <!-- Motion controls + Direct Link to /proyectos always visible -->
+          <div class="motion-controls" *ngIf="!hasError && !isLoading && featuredProjects.length > 0">
+            <div class="runway-scroll-hint" *ngIf="isScrollPinEnabled" aria-hidden="true">
+              <span class="hint-label">{{ isPinned ? 'Scroll activo' : 'Desliza' }}</span>
+              <span class="runway-bar"><span class="runway-fill" [style.transform]="'scaleX(' + runwayProgress + ')'"></span></span>
+            </div>
+            <button
+              *ngIf="!isWebGLUnavailable"
+              type="button"
+              class="motion-btn"
+              (click)="togglePause()"
+              [attr.aria-pressed]="isPaused"
+              [attr.aria-label]="isPaused ? 'Reanudar animación 3D' : 'Pausar animación 3D'"
+            >
+              <i class="fas" [ngClass]="isPaused ? 'fa-play' : 'fa-pause'" aria-hidden="true"></i>
+              <span>{{ isPaused ? 'Reanudar' : 'Pausar' }}</span>
+            </button>
+            <button
+              *ngIf="!isWebGLUnavailable"
+              type="button"
+              class="motion-btn"
+              (click)="resetCarousel()"
+              aria-label="Reiniciar carrusel al primer proyecto"
+            >
+              <i class="fas fa-rotate-left" aria-hidden="true"></i>
+              <span>Reiniciar</span>
+            </button>
+            <a routerLink="/proyectos" class="motion-btn motion-btn--all">
+              <span>Ver todos los proyectos</span>
+              <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
 
     <app-connection-error *ngIf="hasError" (retry)="loadProjects()"></app-connection-error>
 
@@ -85,7 +103,13 @@
             <i class="fas fa-chevron-left" aria-hidden="true"></i>
           </button>
 
-          <div class="active-project-info" aria-live="polite" aria-atomic="true" *ngIf="activeProject as project">
+          <div
+            class="active-project-info"
+            [class.is-open]="isDetailCardOpen"
+            aria-live="polite"
+            aria-atomic="true"
+            *ngIf="activeProject as project"
+          >
             <div class="active-meta-row">
               <span class="active-counter">
                 {{ (selectedIndex + 1).toString().padStart(2, '0') }} / {{ featuredProjects.length.toString().padStart(2, '0') }}
@@ -203,11 +227,13 @@
       </div>
     </div>
 
-    <!-- View All Button -->
-    <div class="view-all-container">
-      <a routerLink="/proyectos" class="btn-view-all">
-        Ver todos los proyectos ({{ featuredProjects.length || 19 }})
-      </a>
+        <!-- View All Button -->
+        <div class="view-all-container">
+          <a routerLink="/proyectos" class="btn-view-all">
+            Ver todos los proyectos ({{ featuredProjects.length || 19 }})
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
