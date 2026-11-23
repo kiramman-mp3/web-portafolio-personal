@@ -1,8 +1,10 @@
 import type { Project } from '../../shared/services/projects.service';
-import { getProjectCover, getProjectImages } from '../../shared/services/projects.service';
+import { getProjectCover } from '../../shared/services/projects.service';
 
 export interface WaveEngineCallbacks {
   onSelectIndex: (index: number) => void;
+  onManualTargetIndex?: (index: number) => void;
+  onMotionStateChange?: (isMoving: boolean) => void;
   onReady: () => void;
   onError: (reason: string) => void;
 }
@@ -23,9 +25,9 @@ const DEG2RAD = Math.PI / 180;
 const DRAG_MULT = 0.02;
 const THROW_MULT = 8;
 
-const CARD_W = 1.92;
-const CARD_H = 2.68;
-const CARD_R = 0.16;
+const CARD_W = 2.52;
+const CARD_H = 1.72;
+const CARD_R = 0.14;
 
 const RAIL_COLORS = [0x2a1418, 0x561d24, 0x3b2226];
 
@@ -84,46 +86,6 @@ function drawCoverImage(
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
-function wrapCanvasText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-  maxLines: number
-): number {
-  const words = text.split(/\s+/).filter(Boolean);
-  let line = '';
-  let lineCount = 0;
-  let curY = y;
-
-  for (let i = 0; i < words.length; i++) {
-    const testLine = line ? `${line} ${words[i]}` : words[i];
-    if (ctx.measureText(testLine).width > maxWidth && line) {
-      lineCount++;
-      if (lineCount >= maxLines) {
-        let clipped = line;
-        while (ctx.measureText(`${clipped}…`).width > maxWidth && clipped.length > 3) {
-          clipped = clipped.slice(0, -1);
-        }
-        ctx.fillText(`${clipped}…`, x, curY);
-        return curY + lineHeight;
-      }
-      ctx.fillText(line, x, curY);
-      line = words[i];
-      curY += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  if (line) {
-    ctx.fillText(line, x, curY);
-    curY += lineHeight;
-  }
-  return curY;
-}
-
 function loadHtmlImage(src: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
     if (!src) {
@@ -149,170 +111,35 @@ function loadHtmlImage(src: string): Promise<HTMLImageElement | null> {
 
 function paintProjectDeckCanvas(
   project: Project,
-  index: number,
-  total: number,
+  _index: number,
+  _total: number,
   coverImg: HTMLImageElement | null
 ): HTMLCanvasElement {
-  const W = 640;
-  const H = 900;
+  // Pure full-bleed project artwork on the 3D card (no overlaid text/badges)
+  const W = 960;
+  const H = 656;
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
 
-  // Base cosmic obsidian surface matching madebyjohan.xyz
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#180b0e');
-  bg.addColorStop(0.52, '#110709');
-  bg.addColorStop(1, '#1e0c10');
-  ctx.fillStyle = bg;
+  ctx.fillStyle = '#0f0709';
   ctx.fillRect(0, 0, W, H);
-
-  // Subtle crimson-rose radial glow
-  const glow = ctx.createRadialGradient(W * 0.5, H * 0.22, 30, W * 0.5, H * 0.28, W * 0.78);
-  glow.addColorStop(0, 'rgba(242, 87, 91, 0.22)');
-  glow.addColorStop(0.55, 'rgba(246, 185, 168, 0.06)');
-  glow.addColorStop(1, 'rgba(10, 4, 5, 0)');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, H);
-
-  // Restrained central hairline stringer behind content
-  ctx.fillStyle = 'rgba(237, 228, 226, 0.06)';
-  ctx.fillRect(W / 2 - 1, 28, 2, H - 56);
-
-  // Outer fine frame
-  roundRectPath(ctx, 22, 22, W - 44, H - 44, 30);
-  ctx.strokeStyle = 'rgba(237, 228, 226, 0.14)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Header metadata row (index + status dot)
-  const numLabel = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
-  ctx.font = '500 20px "IBM Plex Mono", ui-monospace, monospace';
-  ctx.fillStyle = 'rgba(237, 228, 226, 0.58)';
-  ctx.fillText(numLabel, 48, 72);
-
-  const statusColor =
-    project.status === 'completado'
-      ? '#34d399'
-      : project.status === 'en-progreso'
-        ? '#fbbf24'
-        : '#60a5fa';
-  const statusLabel =
-    project.status === 'completado'
-      ? 'COMPLETADO'
-      : project.status === 'en-progreso'
-        ? 'EN PROGRESO'
-        : 'PLANIFICADO';
-
-  ctx.font = '600 17px "IBM Plex Mono", ui-monospace, monospace';
-  const stWidth = ctx.measureText(statusLabel).width;
-  const pillW = stWidth + 42;
-  const pillX = W - 48 - pillW;
-  roundRectPath(ctx, pillX, 48, pillW, 34, 17);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(pillX + 16, 65, 5, 0, Math.PI * 2);
-  ctx.fillStyle = statusColor;
-  ctx.fill();
-  ctx.fillStyle = 'rgba(237, 228, 226, 0.86)';
-  ctx.fillText(statusLabel, pillX + 28, 71);
-
-  // Project cover artwork frame (crisp, aspect-preserved)
-  const imgX = 44;
-  const imgY = 104;
-  const imgW = W - 88;
-  const imgH = 382;
-
-  ctx.save();
-  roundRectPath(ctx, imgX, imgY, imgW, imgH, 22);
-  ctx.clip();
-
-  ctx.fillStyle = '#0c0507';
-  ctx.fillRect(imgX, imgY, imgW, imgH);
 
   if (coverImg) {
-    drawCoverImage(ctx, coverImg, imgX, imgY, imgW, imgH);
+    drawCoverImage(ctx, coverImg, 0, 0, W, H);
   } else {
-    const fallbackGrad = ctx.createLinearGradient(imgX, imgY, imgX + imgW, imgY + imgH);
+    const fallbackGrad = ctx.createLinearGradient(0, 0, W, H);
     fallbackGrad.addColorStop(0, '#2a1217');
     fallbackGrad.addColorStop(1, '#120709');
     ctx.fillStyle = fallbackGrad;
-    ctx.fillRect(imgX, imgY, imgW, imgH);
+    ctx.fillRect(0, 0, W, H);
   }
 
-  // Soft bottom vignette for seamless transition
-  const vig = ctx.createLinearGradient(0, imgY + imgH - 90, 0, imgY + imgH);
-  vig.addColorStop(0, 'rgba(17, 7, 9, 0)');
-  vig.addColorStop(1, 'rgba(17, 7, 9, 0.72)');
-  ctx.fillStyle = vig;
-  ctx.fillRect(imgX, imgY + imgH - 90, imgW, 90);
-  ctx.restore();
-
-  roundRectPath(ctx, imgX, imgY, imgW, imgH, 22);
-  ctx.strokeStyle = 'rgba(237, 228, 226, 0.16)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Multi-image indicator if > 1 image
-  const imgCount = getProjectImages(project).length;
-  if (imgCount > 1) {
-    const countTxt = `${imgCount} FOTOS`;
-    ctx.font = '600 16px "IBM Plex Mono", ui-monospace, monospace';
-    const cw = ctx.measureText(countTxt).width + 24;
-    const cx = imgX + imgW - cw - 14;
-    const cy = imgY + imgH - 44;
-    roundRectPath(ctx, cx, cy, cw, 30, 15);
-    ctx.fillStyle = 'rgba(10, 4, 5, 0.8)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.fillStyle = '#ede4e2';
-    ctx.fillText(countTxt, cx + 12, cy + 21);
-  }
-
-  // Restrained crimson-rose divider band
-  const accentGrad = ctx.createLinearGradient(48, 0, W - 48, 0);
-  accentGrad.addColorStop(0, '#f2575b');
-  accentGrad.addColorStop(0.5, '#f6b9a8');
-  accentGrad.addColorStop(1, 'rgba(242, 87, 91, 0.15)');
-  ctx.fillStyle = accentGrad;
-  ctx.fillRect(48, 514, W - 96, 3);
-
-  // Project Title in site editorial serif
-  ctx.fillStyle = '#ede4e2';
-  ctx.font = 'italic 600 42px "Fraunces", Georgia, serif';
-  let curY = wrapCanvasText(ctx, project.title, 48, 574, W - 96, 48, 2);
-
-  // Short Description
-  ctx.fillStyle = 'rgba(237, 228, 226, 0.72)';
-  ctx.font = '400 22px "IBM Plex Sans", system-ui, sans-serif';
-  wrapCanvasText(ctx, project.shortDescription || '', 48, curY + 14, W - 96, 31, 3);
-
-  // Bottom tech pills
-  const techs = (project.technologies || []).slice(0, 4);
-  let chipX = 48;
-  const chipY = H - 84;
-  ctx.font = '500 18px "IBM Plex Mono", ui-monospace, monospace';
-  for (const tech of techs) {
-    const tw = ctx.measureText(tech).width + 28;
-    if (chipX + tw > W - 48) break;
-    roundRectPath(ctx, chipX, chipY, tw, 36, 18);
-    ctx.fillStyle = 'rgba(242, 87, 91, 0.12)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(242, 87, 91, 0.34)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.fillStyle = '#f6b9a8';
-    ctx.fillText(tech, chipX + 14, chipY + 24);
-    chipX += tw + 10;
-  }
+  // Subtle rim highlight so the 3D beveled edges catch studio lighting cleanly
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, W - 4, H - 4);
 
   return canvas;
 }
@@ -652,8 +479,8 @@ export class ProjectWaveEngine {
   }
 
   private paintBackPlateCanvas(): HTMLCanvasElement {
-    const W = 512;
-    const H = 720;
+    const W = 720;
+    const H = 492;
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
@@ -668,17 +495,17 @@ export class ProjectWaveEngine {
 
     // Subtle central stringer
     ctx.fillStyle = 'rgba(242, 87, 91, 0.22)';
-    ctx.fillRect(W / 2 - 1, 36, 2, H - 72);
+    ctx.fillRect(W / 2 - 1, 28, 2, H - 56);
 
     // Restrained geometric border
-    roundRectPath(ctx, 26, 26, W - 52, H - 52, 26);
+    roundRectPath(ctx, 22, 22, W - 44, H - 44, 24);
     ctx.strokeStyle = 'rgba(237, 228, 226, 0.14)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Minimalist monogram badge in center
     ctx.beginPath();
-    ctx.arc(W / 2, H / 2, 54, 0, Math.PI * 2);
+    ctx.arc(W / 2, H / 2 - 12, 48, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(242, 87, 91, 0.1)';
     ctx.fill();
     ctx.strokeStyle = 'rgba(242, 87, 91, 0.35)';
@@ -686,14 +513,14 @@ export class ProjectWaveEngine {
     ctx.stroke();
 
     ctx.fillStyle = '#ede4e2';
-    ctx.font = 'italic 600 44px "Fraunces", Georgia, serif';
+    ctx.font = 'italic 600 40px "Fraunces", Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('JR', W / 2, H / 2 + 2);
+    ctx.fillText('JR', W / 2, H / 2 - 10);
 
     ctx.font = '500 14px "IBM Plex Mono", ui-monospace, monospace';
     ctx.fillStyle = 'rgba(246, 185, 168, 0.65)';
-    ctx.fillText('MADEBYJOHAN.XYZ', W / 2, H - 76);
+    ctx.fillText('MADEBYJOHAN.XYZ', W / 2, H - 58);
 
     return canvas;
   }
@@ -932,7 +759,14 @@ export class ProjectWaveEngine {
       if (applyThrow && !this.reducedMotion) {
         this.target -= this.lastDeltaX * DRAG_MULT * THROW_MULT;
       }
-      this.target = Math.round(this.target / S) * S;
+      if (this.isScrollDriven) {
+        const maxLogical = Math.max(0, this.projects.length - 1);
+        const clampedLogical = clamp(Math.round(this.target / S), 0, maxLogical);
+        this.target = clampedLogical * S;
+        this.callbacks.onManualTargetIndex?.(clampedLogical);
+      } else {
+        this.target = Math.round(this.target / S) * S;
+      }
       if (this.reducedMotion || this.isPaused) {
         this.position = this.target;
         this.applyWaveTransforms(0);
@@ -989,7 +823,13 @@ export class ProjectWaveEngine {
       return;
     }
 
-    this.target = slot.logicalIndex * S;
+    if (this.isScrollDriven) {
+      const targetProj = positiveModulo(slot.logicalIndex, this.projects.length);
+      this.target = targetProj * S;
+      this.callbacks.onManualTargetIndex?.(targetProj);
+    } else {
+      this.target = slot.logicalIndex * S;
+    }
     if (this.reducedMotion || this.isPaused) {
       this.position = this.target;
       this.applyWaveTransforms(0);
@@ -1039,8 +879,34 @@ export class ProjectWaveEngine {
     }
   }
 
+  private isScrollDriven = false;
+  private lastReportedMoving = false;
+
+  setScrollDriven(enabled: boolean): void {
+    this.isScrollDriven = enabled;
+  }
+
+  /**
+   * Drive the wave target continuously from vertical scroll progress [0, 1]
+   * across all real projects [0 .. projects.length - 1].
+   */
+  setScrollProgress(progress: number): void {
+    const count = this.projects.length;
+    if (count <= 1 || this.isDraggingHorizontal) return;
+    const clamped = clamp(progress, 0, 1);
+    this.target = clamped * (count - 1) * S;
+    if (this.reducedMotion || this.isPaused) {
+      this.position = this.target;
+      this.applyWaveTransforms(0);
+      this.renderOnce();
+      this.syncSelectedIndex();
+    } else {
+      this.startLoop();
+    }
+  }
+
   private stepPhysics(dt: number): void {
-    if (!this.isDraggingHorizontal) {
+    if (!this.isDraggingHorizontal && !this.isScrollDriven) {
       this.target = Math.round(this.target / S) * S;
     }
     if (this.reducedMotion) {
@@ -1051,6 +917,12 @@ export class ProjectWaveEngine {
       if (!this.isDraggingHorizontal && Math.abs(this.target - this.position) < 0.0005) {
         this.position = this.target;
       }
+    }
+
+    const movingNow = this.isDraggingHorizontal || Math.abs(this.target - this.position) > 0.08;
+    if (movingNow !== this.lastReportedMoving) {
+      this.lastReportedMoving = movingNow;
+      this.callbacks.onMotionStateChange?.(movingNow);
     }
   }
 
@@ -1092,11 +964,15 @@ export class ProjectWaveEngine {
       const tiltY = this.reducedMotion ? 0 : this.hoverSmoothX * tiltScale * centerWeight;
       const tiltX = this.reducedMotion ? 0 : this.hoverSmoothY * tiltScale * centerWeight;
 
-      const rotX = -20 * DEG2RAD + tiltX;
-      const rotY = x * 0.5 - 20 * DEG2RAD + tiltY;
+      const rotX = -18 * DEG2RAD + tiltX;
+      const rotY = x * 0.45 - 18 * DEG2RAD + tiltY;
       const rotZ = 11.25 * DEG2RAD;
 
-      slot.outer.position.set(x, Math.sin(x * W), -Math.abs(x) - 0.2);
+      // Diagonal wave path: incoming cards descend from top-right (+x, +y)
+      // through center (0, 0) and exit toward bottom-left (-x, -y) with sinusoidal ripple & receding Z.
+      const diagX = x * 0.88;
+      const diagY = x * 0.42 + Math.sin(x * W) * 0.55;
+      slot.outer.position.set(diagX, diagY, -Math.abs(x) - 0.2);
       slot.outer.rotation.set(rotX, rotY, rotZ);
       slot.outer.scale.setScalar(1.2);
 

@@ -28,6 +28,7 @@ import type { ProjectWaveEngine } from './project-wave-engine';
   styleUrl: './featured-projects.component.scss',
 })
 export class FeaturedProjectsComponent implements OnInit, OnDestroy {
+  @ViewChild('scrollRunway') scrollRunwayRef?: ElementRef<HTMLElement>;
   @ViewChild('stageContainer') stageContainerRef?: ElementRef<HTMLElement>;
   @ViewChild('waveCanvas') waveCanvasRef?: ElementRef<HTMLCanvasElement>;
 
@@ -42,6 +43,9 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
   isWebGLUnavailable = false;
   isPaused = false;
   reducedMotion = false;
+  runwayProgress = 0;
+  isPinned = false;
+  isDetailCardOpen = true;
 
   private engine: ProjectWaveEngine | null = null;
   private initTriggered = false;
@@ -49,6 +53,10 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
   private motionMediaQuery?: MediaQueryList;
   private boundPopState?: () => void;
   private boundMotionChange?: (e: MediaQueryListEvent) => void;
+  private boundScroll?: () => void;
+  private scrollRafId = 0;
+  private settleTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastScrollY = 0;
   private isRestoringFromHistory = false;
 
   constructor(
@@ -65,6 +73,10 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
     return this.featuredProjects[this.selectedIndex];
   }
 
+  get isScrollPinEnabled(): boolean {
+    return !this.reducedMotion && !this.isWebGLUnavailable && this.featuredProjects.length > 1;
+  }
+
   ngOnInit(): void {
     if (!this.isBrowser) {
       this.isLoading = false;
@@ -76,6 +88,7 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
     this.boundMotionChange = (e: MediaQueryListEvent) => {
       this.reducedMotion = e.matches;
       this.engine?.setReducedMotion(this.reducedMotion);
+      this.engine?.setScrollDriven(this.isScrollPinEnabled);
       this.cdr.detectChanges();
     };
     this.motionMediaQuery?.addEventListener?.('change', this.boundMotionChange);
@@ -83,19 +96,116 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
     this.boundPopState = () => this.syncSelectionFromUrl();
     window.addEventListener('popstate', this.boundPopState);
 
+    this.boundScroll = () => this.scheduleScrollSync();
+    this.ngZone.runOutsideAngular(() => {
+      window.addEventListener('scroll', this.boundScroll!, { passive: true });
+      window.addEventListener('resize', this.boundScroll!, { passive: true });
+    });
+
     this.loadProjects();
   }
 
   ngOnDestroy(): void {
     this.nearViewportObserver?.disconnect();
-    if (this.boundPopState && this.isBrowser) {
-      window.removeEventListener('popstate', this.boundPopState);
+    if (this.isBrowser) {
+      if (this.boundPopState) window.removeEventListener('popstate', this.boundPopState);
+      if (this.boundScroll) {
+        window.removeEventListener('scroll', this.boundScroll);
+        window.removeEventListener('resize', this.boundScroll);
+      }
+      if (this.scrollRafId) {
+        cancelAnimationFrame(this.scrollRafId);
+        this.scrollRafId = 0;
+      }
+      if (this.settleTimer) {
+        clearTimeout(this.settleTimer);
+        this.settleTimer = null;
+      }
     }
     if (this.boundMotionChange) {
       this.motionMediaQuery?.removeEventListener?.('change', this.boundMotionChange);
     }
     this.engine?.dispose();
     this.engine = null;
+  }
+
+  private scheduleScrollSync(): void {
+    if (this.scrollRafId) return;
+    this.scrollRafId = requestAnimationFrame(() => {
+      this.scrollRafId = 0;
+      this.syncWaveWithScroll();
+    });
+  }
+
+  private markScrollingActive(): void {
+    if (this.reducedMotion) {
+      if (!this.isDetailCardOpen) {
+        this.isDetailCardOpen = true;
+        this.cdr.detectChanges();
+      }
+      return;
+    }
+    if (this.isDetailCardOpen) {
+      this.ngZone.run(() => {
+        this.isDetailCardOpen = false;
+        this.cdr.detectChanges();
+      });
+    }
+    if (this.settleTimer) {
+      clearTimeout(this.settleTimer);
+    }
+    this.settleTimer = setTimeout(() => {
+      this.settleTimer = null;
+      this.ngZone.run(() => {
+        this.isDetailCardOpen = true;
+        this.cdr.detectChanges();
+      });
+    }, 240);
+  }
+
+  private syncWaveWithScroll(): void {
+    if (!this.isScrollPinEnabled || !this.scrollRunwayRef) return;
+    const runway = this.scrollRunwayRef.nativeElement;
+    const rect = runway.getBoundingClientRect();
+    const scrollable = Math.max(runway.offsetHeight - window.innerHeight, 1);
+    const rawProgress = -rect.top / scrollable;
+    const clamped = Math.min(1, Math.max(0, rawProgress));
+    const pinnedNow = rect.top <= 2 && rect.bottom >= window.innerHeight - 2;
+
+    const scrollDelta = Math.abs(window.scrollY - this.lastScrollY);
+    this.lastScrollY = window.scrollY;
+    if (pinnedNow && scrollDelta > 1) {
+      this.markScrollingActive();
+    }
+
+    if (this.engine && !this.isPaused) {
+      this.engine.setScrollProgress(clamped);
+    }
+
+    if (pinnedNow !== this.isPinned || Math.abs(clamped - this.runwayProgress) > 0.002) {
+      this.ngZone.run(() => {
+        this.isPinned = pinnedNow;
+        this.runwayProgress = clamped;
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  private scrollRunwayToIndex(index: number, instant = false): void {
+    if (!this.isBrowser || !this.isScrollPinEnabled || !this.scrollRunwayRef) return;
+    const count = this.featuredProjects.length;
+    if (count <= 1) return;
+    const clampedIdx = Math.min(count - 1, Math.max(0, index));
+    const runway = this.scrollRunwayRef.nativeElement;
+    const rect = runway.getBoundingClientRect();
+    const runwayTopDoc = window.scrollY + rect.top;
+    const scrollable = Math.max(runway.offsetHeight - window.innerHeight, 0);
+    const targetY = runwayTopDoc + (clampedIdx / (count - 1)) * scrollable;
+
+    window.scrollTo({
+      top: Math.round(targetY),
+      behavior: instant || this.reducedMotion ? 'auto' : 'smooth',
+    });
   }
 
   loadProjects(): void {
@@ -239,6 +349,8 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
             onReady: () => {
               this.ngZone.run(() => {
                 this.isCanvasReady = true;
+                this.engine?.setScrollDriven(this.isScrollPinEnabled);
+                this.syncWaveWithScroll();
                 this.cdr.detectChanges();
               });
             },
@@ -248,6 +360,22 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
                 this.pushHistoryForIndex(idx);
                 this.cdr.detectChanges();
               });
+            },
+            onManualTargetIndex: (idx: number) => {
+              this.ngZone.run(() => {
+                this.scrollRunwayToIndex(idx);
+              });
+            },
+            onMotionStateChange: (isMoving: boolean) => {
+              if (this.reducedMotion) return;
+              if (isMoving) {
+                this.markScrollingActive();
+              } else if (!this.settleTimer && !this.isDetailCardOpen) {
+                this.ngZone.run(() => {
+                  this.isDetailCardOpen = true;
+                  this.cdr.detectChanges();
+                });
+              }
             },
             onError: (reason: string) => {
               console.warn('3D Wave Carousel fallback activated:', reason);
@@ -274,6 +402,11 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
   // Controls
   prevProject(): void {
     if (this.featuredProjects.length === 0) return;
+    if (this.isScrollPinEnabled && !this.isPaused) {
+      const nextIdx = Math.max(0, this.selectedIndex - 1);
+      this.scrollRunwayToIndex(nextIdx);
+      return;
+    }
     if (this.engine && !this.isWebGLUnavailable) {
       this.engine.step(-1);
     } else {
@@ -285,6 +418,11 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
 
   nextProject(): void {
     if (this.featuredProjects.length === 0) return;
+    if (this.isScrollPinEnabled && !this.isPaused) {
+      const nextIdx = Math.min(this.featuredProjects.length - 1, this.selectedIndex + 1);
+      this.scrollRunwayToIndex(nextIdx);
+      return;
+    }
     if (this.engine && !this.isWebGLUnavailable) {
       this.engine.step(1);
     } else {
@@ -296,6 +434,10 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
 
   selectProjectDot(index: number): void {
     if (this.featuredProjects.length === 0) return;
+    if (this.isScrollPinEnabled && !this.isPaused) {
+      this.scrollRunwayToIndex(index);
+      return;
+    }
     if (this.engine && !this.isWebGLUnavailable) {
       this.engine.goToProjectIndex(index);
     } else {
@@ -310,6 +452,10 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
   }
 
   resetCarousel(): void {
+    if (this.isScrollPinEnabled && !this.isPaused) {
+      this.scrollRunwayToIndex(0);
+      return;
+    }
     if (this.engine && !this.isWebGLUnavailable) {
       this.engine.reset();
     } else {
