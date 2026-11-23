@@ -1,7 +1,61 @@
-<div class="page-content-reveal">
-  <app-hero></app-hero>
-  <app-corporate-about></app-corporate-about>
-  <app-featured-services></app-featured-services>
-  <app-featured-projects></app-featured-projects>
+<div class="page-content-reveal scrolly-home">
+  <!-- Subtle top reading progress hairline -->
+  <div class="story-progress-bar" aria-hidden="true">
+    <span class="story-progress-fill" [style.transform]="'scaleX(' + scrollProgress() + ')'"></span>
+  </div>
+
+  <!-- Floating galactic chapter rail (desktop) -->
+  <nav class="story-rail" aria-label="Capítulos del recorrido">
+    <div class="story-rail-track" aria-hidden="true">
+      <span class="story-rail-fill" [style.transform]="'scaleY(' + scrollProgress() + ')'"></span>
+    </div>
+    <button
+      *ngFor="let chapter of chapters; let i = index"
+      type="button"
+      class="story-rail-dot"
+      [class.is-active]="activeChapterIndex() === i"
+      [attr.aria-current]="activeChapterIndex() === i ? 'step' : null"
+      [attr.aria-label]="'Ir a ' + chapter.num + ' ' + chapter.label"
+      (click)="scrollToChapter(chapter.id)"
+    >
+      <span class="rail-label">{{ chapter.num }} · {{ chapter.label }}</span>
+      <span class="rail-marker" aria-hidden="true"></span>
+    </button>
+  </nav>
+
+  <!-- Chapter 01: Inicio -->
+  <section #storyChapter id="capitulo-inicio" class="story-chapter story-chapter--hero" [class.is-active]="activeChapterIndex() === 0">
+    <app-hero></app-hero>
+    <div class="story-scroll-cue">
+      <button type="button" class="scroll-cue-btn" (click)="scrollToChapter('capitulo-sobre-mi')" aria-label="Deslizar al siguiente capítulo: Sobre mí">
+        <span>Desliza para recorrer la historia</span>
+        <i class="fas fa-arrow-down" aria-hidden="true"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- Chapter 02: Sobre mí -->
+  <section #storyChapter id="capitulo-sobre-mi" class="story-chapter" [class.is-active]="activeChapterIndex() === 1">
+    <div class="story-chapter-bridge">
+      <span class="bridge-line" aria-hidden="true"></span>
+      <span class="bridge-tag">02 · Trayectoria</span>
+    </div>
+    <app-corporate-about></app-corporate-about>
+  </section>
+
+  <!-- Chapter 03: Servicios -->
+  <section #storyChapter id="capitulo-servicios" class="story-chapter" [class.is-active]="activeChapterIndex() === 2">
+    <div class="story-chapter-bridge">
+      <span class="bridge-line" aria-hidden="true"></span>
+      <span class="bridge-tag">03 · Capacidades</span>
+    </div>
+    <app-featured-services></app-featured-services>
+  </section>
+
+  <!-- Chapter 04: Proyectos (3D Inertial Wave Carousel) -->
+  <section #storyChapter id="capitulo-proyectos" class="story-chapter story-chapter--climax" [class.is-active]="activeChapterIndex() === 3">
+    <app-featured-projects></app-featured-projects>
+  </section>
+
   <app-footer></app-footer>
 </div>
