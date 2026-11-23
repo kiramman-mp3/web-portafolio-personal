@@ -19,42 +19,6 @@
           <div class="header-copy">
             <p class="chapter-kicker">04 · Obra</p>
             <h2 class="section-title">Proyectos</h2>
-            <p class="wave-subtitle">
-              Desliza hacia abajo para recorrer los {{ featuredProjects.length || 19 }} proyectos en diagonal 3D, o usa las flechas y el arrastre.
-            </p>
-          </div>
-
-          <!-- Motion controls + Direct Link to /proyectos always visible -->
-          <div class="motion-controls" *ngIf="!hasError && !isLoading && featuredProjects.length > 0">
-            <div class="runway-scroll-hint" *ngIf="isScrollPinEnabled" aria-hidden="true">
-              <span class="hint-label">{{ isPinned ? 'Scroll activo' : 'Desliza' }}</span>
-              <span class="runway-bar"><span class="runway-fill" [style.transform]="'scaleX(' + runwayProgress + ')'"></span></span>
-            </div>
-            <button
-              *ngIf="!isWebGLUnavailable"
-              type="button"
-              class="motion-btn"
-              (click)="togglePause()"
-              [attr.aria-pressed]="isPaused"
-              [attr.aria-label]="isPaused ? 'Reanudar animación 3D' : 'Pausar animación 3D'"
-            >
-              <i class="fas" [ngClass]="isPaused ? 'fa-play' : 'fa-pause'" aria-hidden="true"></i>
-              <span>{{ isPaused ? 'Reanudar' : 'Pausar' }}</span>
-            </button>
-            <button
-              *ngIf="!isWebGLUnavailable"
-              type="button"
-              class="motion-btn"
-              (click)="resetCarousel()"
-              aria-label="Reiniciar carrusel al primer proyecto"
-            >
-              <i class="fas fa-rotate-left" aria-hidden="true"></i>
-              <span>Reiniciar</span>
-            </button>
-            <a routerLink="/proyectos" class="motion-btn motion-btn--all">
-              <span>Ver todos los proyectos</span>
-              <i class="fas fa-arrow-right" aria-hidden="true"></i>
-            </a>
           </div>
         </div>
 
