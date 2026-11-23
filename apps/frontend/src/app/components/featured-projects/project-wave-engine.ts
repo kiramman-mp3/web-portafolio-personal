@@ -1,5 +1,5 @@
 import type { Project } from '../../shared/services/projects.service';
-import { getProjectCover } from '../../shared/services/projects.service';
+import { getProjectCover, getProjectImages } from '../../shared/services/projects.service';
 
 export interface WaveEngineCallbacks {
   onSelectIndex: (index: number) => void;
@@ -18,16 +18,16 @@ export interface WaveEngineOptions {
   callbacks: WaveEngineCallbacks;
 }
 
-const S = 3.5;
+const S = 3.7;
 const BUFFER_COUNT = 12;
-const HALF_SPAN = (BUFFER_COUNT * S) / 2; // 21
+const HALF_SPAN = (BUFFER_COUNT * S) / 2;
 const DEG2RAD = Math.PI / 180;
 const DRAG_MULT = 0.02;
 const THROW_MULT = 8;
 
-const CARD_W = 2.52;
-const CARD_H = 1.72;
-const CARD_R = 0.14;
+const CARD_W = 2.22;
+const CARD_H = 3.08;
+const CARD_R = 0.17;
 
 const RAIL_COLORS = [0x2a1418, 0x561d24, 0x3b2226];
 
@@ -86,6 +86,46 @@ function drawCoverImage(
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
+function wrapCanvasText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  maxLines: number
+): number {
+  const words = text.split(/\s+/).filter(Boolean);
+  let line = '';
+  let lineCount = 0;
+  let curY = y;
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line ? `${line} ${words[i]}` : words[i];
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      lineCount++;
+      if (lineCount >= maxLines) {
+        let clipped = line;
+        while (ctx.measureText(`${clipped}…`).width > maxWidth && clipped.length > 3) {
+          clipped = clipped.slice(0, -1);
+        }
+        ctx.fillText(`${clipped}…`, x, curY);
+        return curY + lineHeight;
+      }
+      ctx.fillText(line, x, curY);
+      line = words[i];
+      curY += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line) {
+    ctx.fillText(line, x, curY);
+    curY += lineHeight;
+  }
+  return curY;
+}
+
 function loadHtmlImage(src: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
     if (!src) {
@@ -111,35 +151,170 @@ function loadHtmlImage(src: string): Promise<HTMLImageElement | null> {
 
 function paintProjectDeckCanvas(
   project: Project,
-  _index: number,
-  _total: number,
+  index: number,
+  total: number,
   coverImg: HTMLImageElement | null
 ): HTMLCanvasElement {
-  // Pure full-bleed project artwork on the 3D card (no overlaid text/badges)
-  const W = 960;
-  const H = 656;
+  const W = 720;
+  const H = 1000;
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
 
-  ctx.fillStyle = '#0f0709';
+  // Base cosmic obsidian surface matching madebyjohan.xyz
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#180b0e');
+  bg.addColorStop(0.52, '#110709');
+  bg.addColorStop(1, '#1e0c10');
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
+  // Subtle crimson-rose radial glow
+  const glow = ctx.createRadialGradient(W * 0.5, H * 0.22, 30, W * 0.5, H * 0.28, W * 0.78);
+  glow.addColorStop(0, 'rgba(242, 87, 91, 0.22)');
+  glow.addColorStop(0.55, 'rgba(246, 185, 168, 0.06)');
+  glow.addColorStop(1, 'rgba(10, 4, 5, 0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // Restrained central hairline stringer behind content
+  ctx.fillStyle = 'rgba(237, 228, 226, 0.06)';
+  ctx.fillRect(W / 2 - 1, 30, 2, H - 60);
+
+  // Outer fine frame
+  roundRectPath(ctx, 24, 24, W - 48, H - 48, 32);
+  ctx.strokeStyle = 'rgba(237, 228, 226, 0.16)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Header metadata row (index + status dot)
+  const numLabel = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+  ctx.font = '500 22px "IBM Plex Mono", ui-monospace, monospace';
+  ctx.fillStyle = 'rgba(237, 228, 226, 0.6)';
+  ctx.fillText(numLabel, 50, 78);
+
+  const statusColor =
+    project.status === 'completado'
+      ? '#34d399'
+      : project.status === 'en-progreso'
+        ? '#fbbf24'
+        : '#60a5fa';
+  const statusLabel =
+    project.status === 'completado'
+      ? 'COMPLETADO'
+      : project.status === 'en-progreso'
+        ? 'EN PROGRESO'
+        : 'PLANIFICADO';
+
+  ctx.font = '600 18px "IBM Plex Mono", ui-monospace, monospace';
+  const stWidth = ctx.measureText(statusLabel).width;
+  const pillW = stWidth + 44;
+  const pillX = W - 50 - pillW;
+  roundRectPath(ctx, pillX, 52, pillW, 38, 19);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(pillX + 18, 71, 5.5, 0, Math.PI * 2);
+  ctx.fillStyle = statusColor;
+  ctx.fill();
+  ctx.fillStyle = 'rgba(237, 228, 226, 0.88)';
+  ctx.fillText(statusLabel, pillX + 31, 77);
+
+  // Large crisp project cover artwork frame
+  const imgX = 46;
+  const imgY = 112;
+  const imgW = W - 92;
+  const imgH = 440;
+
+  ctx.save();
+  roundRectPath(ctx, imgX, imgY, imgW, imgH, 24);
+  ctx.clip();
+
+  ctx.fillStyle = '#0c0507';
+  ctx.fillRect(imgX, imgY, imgW, imgH);
+
   if (coverImg) {
-    drawCoverImage(ctx, coverImg, 0, 0, W, H);
+    drawCoverImage(ctx, coverImg, imgX, imgY, imgW, imgH);
   } else {
-    const fallbackGrad = ctx.createLinearGradient(0, 0, W, H);
+    const fallbackGrad = ctx.createLinearGradient(imgX, imgY, imgX + imgW, imgY + imgH);
     fallbackGrad.addColorStop(0, '#2a1217');
     fallbackGrad.addColorStop(1, '#120709');
     ctx.fillStyle = fallbackGrad;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(imgX, imgY, imgW, imgH);
   }
 
-  // Subtle rim highlight so the 3D beveled edges catch studio lighting cleanly
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(2, 2, W - 4, H - 4);
+  // Soft bottom vignette
+  const vig = ctx.createLinearGradient(0, imgY + imgH - 96, 0, imgY + imgH);
+  vig.addColorStop(0, 'rgba(17, 7, 9, 0)');
+  vig.addColorStop(1, 'rgba(17, 7, 9, 0.72)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(imgX, imgY + imgH - 96, imgW, 96);
+  ctx.restore();
+
+  roundRectPath(ctx, imgX, imgY, imgW, imgH, 24);
+  ctx.strokeStyle = 'rgba(237, 228, 226, 0.18)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Multi-image indicator if > 1 image
+  const imgCount = getProjectImages(project).length;
+  if (imgCount > 1) {
+    const countTxt = `${imgCount} FOTOS`;
+    ctx.font = '600 18px "IBM Plex Mono", ui-monospace, monospace';
+    const cw = ctx.measureText(countTxt).width + 26;
+    const cx = imgX + imgW - cw - 16;
+    const cy = imgY + imgH - 48;
+    roundRectPath(ctx, cx, cy, cw, 34, 17);
+    ctx.fillStyle = 'rgba(10, 4, 5, 0.82)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#ede4e2';
+    ctx.fillText(countTxt, cx + 13, cy + 23);
+  }
+
+  // Restrained crimson-rose divider band
+  const accentGrad = ctx.createLinearGradient(50, 0, W - 50, 0);
+  accentGrad.addColorStop(0, '#f2575b');
+  accentGrad.addColorStop(0.5, '#f6b9a8');
+  accentGrad.addColorStop(1, 'rgba(242, 87, 91, 0.15)');
+  ctx.fillStyle = accentGrad;
+  ctx.fillRect(50, 580, W - 100, 3);
+
+  // Project Title in site editorial serif
+  ctx.fillStyle = '#ede4e2';
+  ctx.font = 'italic 600 46px "Fraunces", Georgia, serif';
+  const curY = wrapCanvasText(ctx, project.title, 50, 642, W - 100, 52, 2);
+
+  // Short Description
+  ctx.fillStyle = 'rgba(237, 228, 226, 0.74)';
+  ctx.font = '400 24px "IBM Plex Sans", system-ui, sans-serif';
+  wrapCanvasText(ctx, project.shortDescription || '', 50, curY + 14, W - 100, 34, 3);
+
+  // Bottom tech pills
+  const techs = (project.technologies || []).slice(0, 4);
+  let chipX = 50;
+  const chipY = H - 90;
+  ctx.font = '500 20px "IBM Plex Mono", ui-monospace, monospace';
+  for (const tech of techs) {
+    const tw = ctx.measureText(tech).width + 30;
+    if (chipX + tw > W - 50) break;
+    roundRectPath(ctx, chipX, chipY, tw, 40, 20);
+    ctx.fillStyle = 'rgba(242, 87, 91, 0.13)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(242, 87, 91, 0.36)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#f6b9a8';
+    ctx.fillText(tech, chipX + 15, chipY + 26);
+    chipX += tw + 12;
+  }
 
   return canvas;
 }
@@ -479,8 +654,8 @@ export class ProjectWaveEngine {
   }
 
   private paintBackPlateCanvas(): HTMLCanvasElement {
-    const W = 720;
-    const H = 492;
+    const W = 540;
+    const H = 750;
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
@@ -495,17 +670,17 @@ export class ProjectWaveEngine {
 
     // Subtle central stringer
     ctx.fillStyle = 'rgba(242, 87, 91, 0.22)';
-    ctx.fillRect(W / 2 - 1, 28, 2, H - 56);
+    ctx.fillRect(W / 2 - 1, 36, 2, H - 72);
 
     // Restrained geometric border
-    roundRectPath(ctx, 22, 22, W - 44, H - 44, 24);
+    roundRectPath(ctx, 26, 26, W - 52, H - 52, 26);
     ctx.strokeStyle = 'rgba(237, 228, 226, 0.14)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Minimalist monogram badge in center
     ctx.beginPath();
-    ctx.arc(W / 2, H / 2 - 12, 48, 0, Math.PI * 2);
+    ctx.arc(W / 2, H / 2, 54, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(242, 87, 91, 0.1)';
     ctx.fill();
     ctx.strokeStyle = 'rgba(242, 87, 91, 0.35)';
@@ -513,14 +688,14 @@ export class ProjectWaveEngine {
     ctx.stroke();
 
     ctx.fillStyle = '#ede4e2';
-    ctx.font = 'italic 600 40px "Fraunces", Georgia, serif';
+    ctx.font = 'italic 600 44px "Fraunces", Georgia, serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('JR', W / 2, H / 2 - 10);
+    ctx.fillText('JR', W / 2, H / 2 + 2);
 
     ctx.font = '500 14px "IBM Plex Mono", ui-monospace, monospace';
     ctx.fillStyle = 'rgba(246, 185, 168, 0.65)';
-    ctx.fillText('MADEBYJOHAN.XYZ', W / 2, H - 58);
+    ctx.fillText('MADEBYJOHAN.XYZ', W / 2, H - 76);
 
     return canvas;
   }
@@ -568,7 +743,7 @@ export class ProjectWaveEngine {
     if (!this.camera || !this.renderer) return;
     const aspect = this.width / this.height;
     this.camera.aspect = aspect;
-    this.camera.position.set(0, 0, aspect < 0.65 ? 20 : 18);
+    this.camera.position.set(0, 0, aspect < 0.65 ? 17.5 : 13.8);
     this.camera.lookAt(0, 0, 0);
     this.camera.updateProjectionMatrix();
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
@@ -970,11 +1145,11 @@ export class ProjectWaveEngine {
 
       // Diagonal wave path: incoming cards descend from top-right (+x, +y)
       // through center (0, 0) and exit toward bottom-left (-x, -y) with sinusoidal ripple & receding Z.
-      const diagX = x * 0.88;
-      const diagY = x * 0.42 + Math.sin(x * W) * 0.55;
-      slot.outer.position.set(diagX, diagY, -Math.abs(x) - 0.2);
+      const diagX = x * 0.92;
+      const diagY = x * 0.34 + Math.sin(x * W) * 0.45;
+      slot.outer.position.set(diagX, diagY, -Math.abs(x) * 0.9 - 0.15);
       slot.outer.rotation.set(rotX, rotY, rotZ);
-      slot.outer.scale.setScalar(1.2);
+      slot.outer.scale.setScalar(1.36);
 
       // Rotate the ENTIRE inner group (card + rear spine) together so parts never detach
       slot.inner.rotation.z = rotY * 0.6;
