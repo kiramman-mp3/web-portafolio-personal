@@ -49,7 +49,7 @@ export class ProyectosComponent implements OnInit {
     this.hasError = false;
     this.projectsService.getProjects().subscribe({
       next: (data) => {
-        // Tres grupos: destacados, el resto, y los primeros proyectos pendientes de refactorizar
+        // Tres grupos: destacados, el resto, y los proyectos por mejorar
         const lang = this.i18n.lang();
         this.total = data.length;
         this.groups = (['destacado', 'principal', 'temprano'] as Tier[]).map(tier => ({

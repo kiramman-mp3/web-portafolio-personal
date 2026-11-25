@@ -47,7 +47,7 @@
   margin: 0 auto 4rem;
 }
 
-/* Secciones por nivel: destacados, más proyectos y primeros proyectos */
+/* Secciones por nivel: destacados, más proyectos y proyectos por mejorar */
 .tier-section + .tier-section {
   margin-top: 5rem;
 }
@@ -69,7 +69,7 @@
   color: var(--text-muted);
 }
 
-// Los primeros proyectos se ven más discretos: no compiten con los destacados
+// Los proyectos por mejorar se ven más discretos: no compiten con los destacados
 .tier-temprano .project-detail-card {
   opacity: 0.82;
   transition: opacity 0.25s ease;
