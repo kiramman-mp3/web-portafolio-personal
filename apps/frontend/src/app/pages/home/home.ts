@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HeroComponent } from '../../components/hero/hero.component';
 import { CorporateAboutComponent } from '../../components/corporate-about/corporate-about.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { FeaturedServicesComponent } from '../../components/featured-services/featured-services.component';
+import { ExperienceComponent } from '../../components/experience/experience.component';
 import { FeaturedProjectsComponent } from '../../components/featured-projects/featured-projects.component';
 
 @Component({
@@ -11,7 +11,7 @@ import { FeaturedProjectsComponent } from '../../components/featured-projects/fe
   imports: [
     HeroComponent,
     CorporateAboutComponent,
-    FeaturedServicesComponent,
+    ExperienceComponent,
     FeaturedProjectsComponent,
     FooterComponent,
   ],

@@ -1,19 +1,25 @@
-<nav class="navbar" [ngClass]="getNavbarClasses()" id="main-nav" aria-label="Principal">
+@let t = i18n.copy().nav;
+<nav class="navbar" [ngClass]="getNavbarClasses()" id="main-nav" [attr.aria-label]="t.main">
   <div class="nav-shell glass">
-    <a href="/" class="logo-container" (click)="scrollToSection('inicio'); $event.preventDefault()">
+    <a [href]="i18n.link('/')" class="logo-container" (click)="scrollToSection('inicio'); $event.preventDefault()">
       <app-logo-mark class="logo-image" />
       <span class="logo-text">Johan Rodríguez</span>
     </a>
 
     <div class="nav-links" [class.active]="isMenuOpen()" id="nav-links">
-      <a href="/" [class.is-active]="isActive('/')" (click)="navigateToHome(); $event.preventDefault()">Inicio</a>
-      <a href="/servicios" [class.is-active]="isActive('/servicios')" (click)="navigateToServices(); $event.preventDefault()">Servicios</a>
-      <a href="/proyectos" [class.is-active]="isActive('/proyectos')" (click)="navigateToProjects(); $event.preventDefault()">Proyectos</a>
-      <a href="/educacion" [class.is-active]="isActive('/educacion')" (click)="navigateToEducation(); $event.preventDefault()">Educación</a>
-      <a href="/contacto" [class.is-active]="isActive('/contacto')" (click)="navigateToContact(); $event.preventDefault()">Contacto</a>
+      <a [href]="i18n.link('/')" [class.is-active]="isActive('/')" (click)="navigateToHome(); $event.preventDefault()">{{ t.home }}</a>
+      <a [href]="i18n.link('/') + '#experiencia'" (click)="scrollToSection('experiencia'); $event.preventDefault()">{{ t.experience }}</a>
+      <a [href]="i18n.link('/proyectos')" [class.is-active]="isActive('/proyectos')" (click)="go('/proyectos'); $event.preventDefault()">{{ t.projects }}</a>
+      <a [href]="i18n.link('/servicios')" [class.is-active]="isActive('/servicios')" (click)="go('/servicios'); $event.preventDefault()">{{ t.services }}</a>
+      <a [href]="i18n.link('/educacion')" [class.is-active]="isActive('/educacion')" (click)="go('/educacion'); $event.preventDefault()">{{ t.education }}</a>
+      <a [href]="i18n.link('/contacto')" [class.is-active]="isActive('/contacto')" (click)="go('/contacto'); $event.preventDefault()">{{ t.contact }}</a>
     </div>
 
     <div class="nav-actions">
+      <a class="nav-social nav-lang" [routerLink]="i18n.switchUrl()" [attr.aria-label]="t.switchLangLabel" [title]="t.switchLangLabel"
+        [attr.hreflang]="i18n.lang() === 'es' ? 'en' : 'es'" (click)="closeMenu()">
+        {{ i18n.lang() === 'es' ? 'EN' : 'ES' }}
+      </a>
       @if (linkedinUrl) {
         <a class="nav-social" [href]="linkedinUrl" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
           <i class="fab fa-linkedin-in" aria-hidden="true"></i>
@@ -24,14 +30,12 @@
           <i class="fab fa-github" aria-hidden="true"></i>
         </a>
       }
-      @if (cvUrl) {
-        <a class="nav-cv" [href]="cvUrl" download target="_blank" rel="noopener noreferrer" aria-label="Descargar CV">
-          <i class="fas fa-file-arrow-down" aria-hidden="true"></i>
-          <span class="nav-cv-label">Descargar CV</span>
-        </a>
-      }
+      <a class="nav-cv" [href]="i18n.copy().cvUrl" download target="_blank" rel="noopener noreferrer" [attr.aria-label]="t.cv">
+        <i class="fas fa-file-arrow-down" aria-hidden="true"></i>
+        <span class="nav-cv-label">{{ t.cv }}</span>
+      </a>
       <button type="button" class="menu-toggle" [class.open]="isMenuOpen()" (click)="toggleMenu()" id="menu-toggle"
-        aria-controls="nav-links" [attr.aria-expanded]="isMenuOpen()" aria-label="Abrir menú">
+        aria-controls="nav-links" [attr.aria-expanded]="isMenuOpen()" [attr.aria-label]="t.menu">
         <span></span><span></span><span></span>
       </button>
     </div>

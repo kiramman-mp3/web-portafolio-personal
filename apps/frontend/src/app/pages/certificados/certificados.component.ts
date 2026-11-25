@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CertificatesService, Certificate, CertificateStats } from '../../shared/services/certificates.service';
@@ -6,6 +6,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { EducationJourneyComponent } from '../../components/education-journey/education-journey.component';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 export interface CategoryFilterItem {
   id: string;
@@ -29,6 +30,7 @@ export interface CategoryDefinition {
   styleUrl: './certificados.component.scss'
 })
 export class CertificadosComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   certificates: Certificate[] = [];
   filteredCertificates: Certificate[] = [];
   availableCategories: CategoryFilterItem[] = [];
@@ -226,33 +228,9 @@ export class CertificadosComponent implements OnInit {
   }
 
   getCategoryLabel(category: string): string {
-    switch (category) {
-      case 'web':
-        return 'Web & Frontend';
-      case 'backend':
-        return 'Backend & Arquitectura';
-      case 'cloud':
-        return 'Cloud & DevOps';
-      case 'database':
-        return 'Bases de Datos';
-      case 'mobile':
-        return 'Móvil';
-      case 'security':
-      case 'network':
-      case 'redes':
-        return 'Redes & Seguridad';
-      case 'support':
-      case 'helpdesk':
-        return 'Soporte & Help Desk';
-      case 'iot':
-        return 'IoT';
-      case 'idiomas':
-      case 'languages':
-      case 'ingles':
-        return 'Idiomas';
-      default:
-        return 'General';
-    }
+    const labels = this.i18n.copy().certs.categories;
+    const alias: Record<string, string> = { network: 'security', redes: 'security', helpdesk: 'support', languages: 'idiomas', ingles: 'idiomas' };
+    return labels[alias[category] ?? category] ?? labels['general'];
   }
 
   getCategoryIcon(category: string): string {

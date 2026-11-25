@@ -1,35 +1,36 @@
+@let t = i18n.copy().education;
 <section class="journey" id="recorrido">
   <div class="journey-container">
     <div class="journey-grid">
       <div class="journey-main">
         <header class="journey-header">
           <h1 class="page-title">
-            <span class="title-main">Del colegio</span>
-            <span class="title-highlight">a la universidad</span>
+            <span class="title-main">{{ t.title }}</span>
+            <span class="title-highlight">{{ t.highlight }}</span>
           </h1>
-          <p class="journey-lead">Mi recorrido académico, dos paradas en Tungurahua.</p>
+          <p class="journey-lead">{{ t.lead }}</p>
         </header>
 
         <ol class="journey-steps">
-          @for (step of steps; track step.node; let i = $index) {
+          @for (step of steps(); track step.node; let i = $index) {
             <li class="journey-step" [class.is-active]="active() === i" [attr.data-index]="i">
-              <span class="step-count">{{ i + 1 }}/{{ steps.length }} · {{ step.stage }}</span>
+              <span class="step-count">{{ i + 1 }}/{{ steps().length }} · {{ step.stage }}</span>
               <h2>{{ step.title }}</h2>
               <p>{{ step.text }}</p>
 
               <!-- En móvil los datos van junto a cada paso, no en el panel fijo -->
               <dl class="journey-facts step-facts">
-                <div><dt>Institución</dt><dd>{{ step.institution }}</dd></div>
-                <div><dt>Programa</dt><dd>{{ step.program }}</dd></div>
-                <div><dt>Lugar</dt><dd>{{ step.place }}</dd></div>
+                <div><dt>{{ t.labels.institution }}</dt><dd>{{ step.institution }}</dd></div>
+                <div><dt>{{ t.labels.program }}</dt><dd>{{ step.program }}</dd></div>
+                <div><dt>{{ t.labels.place }}</dt><dd>{{ step.place }}</dd></div>
                 @if (step.graduation) {
-                  <div><dt>Grado</dt><dd>{{ step.graduation }}</dd></div>
+                  <div><dt>{{ t.labels.graduation }}</dt><dd>{{ step.graduation }}</dd></div>
                 }
                 @if (step.refrendation) {
-                  <div><dt>Refrendación</dt><dd>{{ step.refrendation }}</dd></div>
+                  <div><dt>{{ t.labels.refrendation }}</dt><dd>{{ step.refrendation }}</dd></div>
                 }
                 @if (step.status) {
-                  <div><dt>Estado</dt><dd>{{ step.status }}</dd></div>
+                  <div><dt>{{ t.labels.status }}</dt><dd>{{ step.status }}</dd></div>
                 }
               </dl>
             </li>
@@ -38,10 +39,10 @@
       </div>
 
       <div class="journey-panel glass" aria-hidden="true">
-        <div class="route" [style.--progress]="active() / (steps.length - 1)">
+        <div class="route" [style.--progress]="active() / (steps().length - 1)">
           <div class="route-track"><div class="route-fill"></div></div>
           <span class="route-comet"></span>
-          @for (step of steps; track step.node; let i = $index) {
+          @for (step of steps(); track step.node; let i = $index) {
             <div class="route-node" [class.is-done]="i < active()" [class.is-active]="i === active()">
               <span class="node-dot"></span>
               <span class="node-label">{{ step.node }}</span>
@@ -49,25 +50,25 @@
           }
         </div>
 
-        @for (step of steps; track step.node; let i = $index) {
+        @for (step of steps(); track step.node; let i = $index) {
           @if (i === active()) {
             <div class="journey-card">
               @if (step.crest) {
-                <img class="card-crest" [src]="step.crest" [alt]="'Escudo de ' + step.institution" width="398" height="502" />
+                <img class="card-crest" [src]="step.crest" [alt]="t.labels.crest + ' ' + step.institution" width="398" height="502" />
               }
               <p class="card-stage">{{ step.stage }}</p>
               <h3>{{ step.institution }}</h3>
               <p class="card-program">{{ step.program }}</p>
               <dl class="journey-facts">
-                <div><dt>Lugar</dt><dd>{{ step.place }}</dd></div>
+                <div><dt>{{ t.labels.place }}</dt><dd>{{ step.place }}</dd></div>
                 @if (step.graduation) {
-                  <div><dt>Grado</dt><dd>{{ step.graduation }}</dd></div>
+                  <div><dt>{{ t.labels.graduation }}</dt><dd>{{ step.graduation }}</dd></div>
                 }
                 @if (step.refrendation) {
-                  <div><dt>Refrendación</dt><dd>{{ step.refrendation }}</dd></div>
+                  <div><dt>{{ t.labels.refrendation }}</dt><dd>{{ step.refrendation }}</dd></div>
                 }
                 @if (step.status) {
-                  <div><dt>Estado</dt><dd>{{ step.status }}</dd></div>
+                  <div><dt>{{ t.labels.status }}</dt><dd>{{ step.status }}</dd></div>
                 }
               </dl>
             </div>

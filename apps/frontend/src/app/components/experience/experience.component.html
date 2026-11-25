@@ -1,0 +1,44 @@
+@let t = i18n.copy().experience;
+<section id="experiencia" class="experience-section" data-nav="theme-dark">
+  <div class="experience-container">
+    <div class="section-header home-section-header">
+      <h2 class="section-title">{{ t.title }}</h2>
+      <p class="experience-lead">{{ t.lead }}</p>
+    </div>
+
+    <ol class="experience-list">
+      @for (job of t.entries; track job.org) {
+        <li class="job glass">
+          <div class="job-head">
+            <div>
+              <h3 class="job-role">{{ job.role }}</h3>
+              <p class="job-org">{{ job.org }}</p>
+            </div>
+            <p class="job-dates">{{ job.dates }}</p>
+          </div>
+          <p class="job-kind">{{ job.kind }}</p>
+          <ul class="job-bullets">
+            @for (b of job.bullets; track b) {
+              <li>{{ b }}</li>
+            }
+          </ul>
+          <div class="job-foot">
+            <ul class="job-stack" aria-label="Stack">
+              @for (s of job.stack; track s) {
+                <li>{{ s }}</li>
+              }
+            </ul>
+            <div class="job-links">
+              @if (job.projectId) {
+                <a [routerLink]="i18n.link('/proyectos/' + job.projectId)">{{ t.seeCase }} <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+              }
+              @if (job.link) {
+                <a [href]="job.link" target="_blank" rel="noopener noreferrer">{{ host(job.link) }} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

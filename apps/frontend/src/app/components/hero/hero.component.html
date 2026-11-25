@@ -1,6 +1,6 @@
+@let t = i18n.copy().hero;
 <header id="inicio" class="hero" data-nav="theme-light">
-  <!-- Retoma el saludo de la intro como fondo tipográfico del hero -->
-  <p class="hero-word" aria-hidden="true">Hola Mundo</p>
+  <p class="hero-word" aria-hidden="true">{{ t.word }}</p>
 
   <div class="hero-content">
     <figure class="hero-photo">
@@ -9,24 +9,17 @@
 
     <div class="hero-text">
       <h1>Johan Rodríguez</h1>
-      <p class="hero-role">Software Engineering Student · Frontend Developer</p>
-      <p class="hero-lead">
-        TypeScript · React · Open to Full Stack. Construyo sistemas web y móviles de punta a punta:
-        base de datos, API, interfaz, despliegue y documentación.
-      </p>
-      @if (availability) {
-        <p class="hero-availability"><span class="availability-dot" aria-hidden="true"></span>{{ availability }}</p>
-      }
+      <p class="hero-role">{{ t.role }}</p>
+      <p class="hero-lead">{{ t.lead }}</p>
+      <p class="hero-availability"><span class="availability-dot" aria-hidden="true"></span>{{ t.availability }}</p>
       <div class="hero-actions">
-        <app-button variant="primary" (click)="scrollToContact()">Escríbeme</app-button>
-        @if (cvUrl) {
-          <a [href]="cvUrl" class="hero-link" target="_blank" rel="noopener noreferrer">Descargar CV</a>
-        }
-        <a routerLink="/proyectos" class="hero-link">Ver proyectos</a>
+        <app-button variant="primary" (click)="scrollToContact()">{{ t.write }}</app-button>
+        <a [href]="i18n.copy().cvUrl" class="hero-link" target="_blank" rel="noopener noreferrer">{{ t.cv }}</a>
+        <a [routerLink]="i18n.link('/proyectos')" class="hero-link">{{ t.projects }}</a>
       </div>
     </div>
 
-    <aside class="hero-terminal glass" aria-label="Actividad reciente en GitHub">
+    <aside class="hero-terminal glass" [attr.aria-label]="t.terminalLabel">
       <div class="terminal-bar">
         <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
         <span class="terminal-title">~/{{ githubUser }}</span>
@@ -37,7 +30,7 @@
         <p class="line"><span class="prompt">$</span> whoami</p>
         <p class="line out">{{ githubUser }}</p>
         <p class="line"><span class="prompt">$</span> cat ubicacion.txt</p>
-        <p class="line out">Tungurahua, Ecuador</p>
+        <p class="line out">Ambato, Ecuador</p>
 
         <p class="line"><span class="prompt">$</span> git log -1 --oneline</p>
         @if (activity(); as data) {
@@ -45,14 +38,14 @@
             <p class="line out"><span class="sha">{{ push.sha }}</span> {{ push.message }}</p>
             <p class="line out muted">{{ push.repo }}, {{ timeAgo(push.date) }}</p>
           } @else {
-            <p class="line out muted">Sin pushes públicos recientes</p>
+            <p class="line out muted">{{ t.noPush }}</p>
           }
           <p class="line"><span class="prompt">$</span> gh repo list --public | wc -l</p>
           <p class="line out">{{ data.publicRepos }}</p>
         } @else if (failed()) {
-          <p class="line out muted">No se pudo leer GitHub ahora mismo</p>
+          <p class="line out muted">{{ t.githubFail }}</p>
         } @else {
-          <p class="line out muted">leyendo api.github.com<span class="cursor"></span></p>
+          <p class="line out muted">{{ t.reading }}<span class="cursor"></span></p>
         }
 
         <p class="line"><span class="prompt">$</span>

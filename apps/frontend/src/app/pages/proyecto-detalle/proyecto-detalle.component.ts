@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef, HostListener, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -7,6 +7,8 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
+import { I18nService } from '../../shared/i18n/i18n.service';
+import { Curated, curationOf } from '../../shared/content/curation';
 
 @Component({
   selector: 'app-proyecto-detalle',
@@ -16,6 +18,7 @@ import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
   styleUrl: './proyecto-detalle.component.scss'
 })
 export class ProyectoDetalleComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   project?: Project;
   isLoading = true;
   hasConnectionError = false;
@@ -32,6 +35,19 @@ export class ProyectoDetalleComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+
+  /** Curaduría editorial del proyecto (rol, contexto y caso de estudio), si la tiene. */
+  get curated(): Curated | undefined {
+    return this.project ? curationOf(this.project.id) : undefined;
+  }
+
+  get title(): string {
+    return this.i18n.pick(this.curated?.title) || this.project?.title || '';
+  }
+
+  get summary(): string {
+    return this.i18n.pick(this.curated?.summary) || this.project?.shortDescription || '';
   }
 
   get galleryImages(): string[] {
@@ -68,6 +84,7 @@ export class ProyectoDetalleComponent implements OnInit {
         this.project = data;
         this.currentImageIndex = 0;
         this.isLoading = false;
+        this.i18n.setMeta(this.title + this.i18n.copy().meta.projectSuffix, this.summary);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -162,17 +179,7 @@ export class ProyectoDetalleComponent implements OnInit {
   }
 
   getStatusText(status?: string): string {
-    if (!status) return '';
-    switch (status) {
-      case 'completado':
-        return 'Completado';
-      case 'en-progreso':
-        return 'En Progreso';
-      case 'planificado':
-        return 'Planificado';
-      default:
-        return '';
-    }
+    return status ? this.i18n.copy().status[status] ?? '' : '';
   }
 
   getStatusIcon(status?: string): string {

@@ -9,6 +9,7 @@ import {
   viewChild
 } from '@angular/core';
 import { Star, createStars, paintMilkyWay } from '../../shared/sky/sky-painter';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 
 // Línea de tiempo de la intro, en milisegundos desde que arranca
@@ -16,7 +17,6 @@ const T = {
   starsIn: 1600,
   galaxyFrom: 700,
   galaxyTo: 2400,
-  hello: 1100,
   meteorStart: 2300,
   meteorDuration: 1150,
   subtitle: 3500,
@@ -30,7 +30,7 @@ const smoothstep = (a: number, b: number, t: number) => {
 };
 
 // Intro de entrada: cielo negro, aparecen estrellas y una galaxia, y una estrella fugaz
-// cruza la pantalla iluminando el texto a su paso. Se muestra en cada carga de la página.
+// cruza la pantalla iluminando el texto a su paso. Solo en la portada y en la primera visita.
 @Component({
   selector: 'app-intro-sky',
   standalone: true,
@@ -41,10 +41,10 @@ const smoothstep = (a: number, b: number, t: number) => {
 export class IntroSkyComponent implements OnDestroy {
   private canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('sky');
   private titleRef = viewChild<ElementRef<HTMLElement>>('title');
+  readonly i18n = inject(I18nService);
 
   done = signal(false);
   leaving = signal(false);
-  showHello = signal(false);
   showSubtitle = signal(false);
 
   private raf = 0;
@@ -80,6 +80,7 @@ export class IntroSkyComponent implements OnDestroy {
       return;
     }
     root.classList.add('intro-active');
+    try { localStorage.setItem('intro-seen', '1'); } catch { /* sin almacenamiento: volverá a salir */ }
     window.addEventListener('keydown', this.onKey);
     window.addEventListener('resize', this.onResize);
     this.setup();
@@ -135,7 +136,6 @@ export class IntroSkyComponent implements OnDestroy {
 
     this.drawMeteor(ctx, t);
 
-    if (t >= T.hello && !this.showHello()) this.showHello.set(true);
     if (t >= T.subtitle && !this.showSubtitle()) this.showSubtitle.set(true);
     if (t >= T.leave) {
       this.finish();

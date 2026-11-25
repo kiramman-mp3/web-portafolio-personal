@@ -1,80 +1,82 @@
+@let t = i18n.copy().projectsPage;
 <section class="projects-page-section">
   <div class="projects-page-container">
-    
+
     <div class="projects-page-header">
       <h1 class="page-title">
-        <span class="title-main">Mis Proyectos</span>
-        <span class="title-highlight">Portafolio de Trabajo</span>
+        <span class="title-main">{{ t.title }}</span>
+        <span class="title-highlight">{{ t.highlight }}</span>
       </h1>
-      <p class="page-subtitle">
-        Una selección de soluciones innovadoras y personalizadas que he desarrollado. Cada proyecto refleja un compromiso con la calidad, el rendimiento y la experiencia del usuario.
-      </p>
+      <p class="page-subtitle">{{ t.subtitle }}</p>
     </div>
 
-    <!-- Interactive Filters -->
-    <div class="filters-container" *ngIf="!hasError">
-      <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
-        Todos
-      </button>
-      <button (click)="setFilter('completado')" class="filter-btn" [class.active]="currentFilter === 'completado'">
-        <i class="fas fa-check"></i> Completados
-      </button>
-      <button (click)="setFilter('en-progreso')" class="filter-btn" [class.active]="currentFilter === 'en-progreso'">
-        <i class="fas fa-clock"></i> En Progreso
-      </button>
-    </div>
-
-    <!-- Loading State -->
     <div *ngIf="isLoading" class="loading-spinner-container">
       <div class="premium-spinner"></div>
-      <p class="loading-text">Cargando proyectos...</p>
+      <p class="loading-text">{{ t.loading }}</p>
     </div>
 
-    <!-- Projects Grid -->
     <app-connection-error *ngIf="!isLoading && hasError" (retry)="loadProjects()"></app-connection-error>
 
-    <div class="projects-list-grid" *ngIf="!isLoading && !hasError">
-      <div *ngFor="let project of filteredProjects" class="project-detail-card">
-        <div class="card-image-wrap">
-          <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
-          <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
-            <i class="fas fa-images"></i> {{ getImageCount(project) }}
-          </span>
-        </div>
+    @if (!isLoading && !hasError) {
+      @for (group of groups; track group.tier) {
+        @if (group.projects.length) {
+          <section class="tier-section" [class]="'tier-' + group.tier" [attr.aria-labelledby]="'tier-' + group.tier">
+            <header class="tier-header">
+              <h2 class="tier-title" [id]="'tier-' + group.tier">{{ t.sections[group.tier].title }}</h2>
+              <p class="tier-text">{{ t.sections[group.tier].text }}</p>
+            </header>
 
-        <div class="card-body">
-          <div class="card-header-row">
-            <h2 class="card-title">{{ project.title }}</h2>
-            <div class="status-badge" [ngClass]="getStatusBadgeClass(project.status)">
-              <i class="fas" [ngClass]="getStatusIcon(project.status)"></i>
-              <span>{{ getStatusText(project.status) }}</span>
+            <div class="projects-list-grid">
+              <div *ngFor="let project of group.projects" class="project-detail-card">
+                <div class="card-image-wrap">
+                  <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
+                  <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' ' + t.images">
+                    <i class="fas fa-images" aria-hidden="true"></i> {{ getImageCount(project) }} {{ t.images }}
+                  </span>
+                </div>
+
+                <div class="card-body">
+                  <div class="card-header-row">
+                    <h3 class="card-title">{{ project.title }}</h3>
+                    <div class="status-badge" [ngClass]="getStatusBadgeClass(project.status)">
+                      <i class="fas" [ngClass]="getStatusIcon(project.status)" aria-hidden="true"></i>
+                      <span>{{ getStatusText(project.status) }}</span>
+                    </div>
+                  </div>
+
+                  @if (roleOf(project); as role) {
+                    <p class="card-role">{{ role }}</p>
+                  }
+
+                  <div class="card-description">{{ project.shortDescription }}</div>
+
+                  <div class="card-tech-wrapper">
+                    <div class="card-tech-list">
+                      <span *ngFor="let tech of project.technologies.slice(0, 3)" class="tech-tag-badge">
+                        <i [class]="getTechIcon(tech)" [style.color]="getTechColor(tech)" aria-hidden="true"></i> {{ tech }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="card-footer-row links-footer">
+                    <a [routerLink]="i18n.link('/proyectos/' + project.id)" class="view-more-btn view-more-detail-btn">
+                      {{ group.tier === 'destacado' ? t.caseStudy : t.more }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
+        }
+      }
 
-          <div class="card-description">{{ project.shortDescription }}</div>
-
-          <div class="card-tech-wrapper">
-            <div class="card-tech-list">
-              <span *ngFor="let tech of project.technologies.slice(0, 3)" class="tech-tag-badge">
-                <i [class]="getTechIcon(tech)" [style.color]="getTechColor(tech)"></i> {{ tech }}
-              </span>
-            </div>
-          </div>
-
-          <div class="card-footer-row links-footer">
-            <a [routerLink]="['/proyectos', project.id]" class="view-more-btn view-more-detail-btn">
-              Ver más <i class="fas fa-arrow-right"></i>
-            </a>
-          </div>
+      @if (!total) {
+        <div class="empty-projects-state">
+          <i class="fas fa-folder-open" aria-hidden="true"></i>
+          <p>{{ t.empty }}</p>
         </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="!isLoading && !hasError && filteredProjects.length === 0" class="empty-projects-state">
-      <i class="fas fa-folder-open"></i>
-      <p>No se encontraron proyectos con esta categoría actualmente.</p>
-    </div>
+      }
+    }
 
   </div>
 </section>
