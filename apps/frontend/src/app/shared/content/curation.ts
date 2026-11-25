@@ -258,7 +258,7 @@ export const CURATION: Record<number, Curated> = {
     summary: l('Angular con SSR, API en Express con Prisma y PostgreSQL, panel de administración y despliegue continuo en mi homelab.', 'Angular with SSR, Express API with Prisma and PostgreSQL, admin panel and continuous deployment on my homelab.')
   },
 
-  // ---------- Primeros proyectos: pendientes de refactorización ----------
+  // ---------- Por mejorar: proyectos pequeños o antiguos, pendientes de refactorización ----------
   22: { tier: 'temprano', order: 1, summary: l('Paz y salvo y liquidación laboral offline-first con IndexedDB.', 'Offline-first employee clearance and severance calculator with IndexedDB.') },
   10: { tier: 'temprano', order: 2, summary: l('App de seguridad personal camuflada como calculadora, con alertas silenciosas.', 'Personal safety app disguised as a calculator, with silent alerts.') },
   12: { tier: 'temprano', order: 3, title: l('La Huelga de los Panaderos (1888)', 'The 1888 Bakers\' Strike'), summary: l('Scrollytelling histórico en HTML, CSS y JavaScript.', 'Historical scrollytelling in HTML, CSS and JavaScript.') },

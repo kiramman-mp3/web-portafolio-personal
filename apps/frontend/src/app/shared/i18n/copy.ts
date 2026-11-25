@@ -108,11 +108,11 @@ const es = {
   projectsPage: {
     title: 'Proyectos',
     highlight: 'Lo que he construido',
-    subtitle: 'Primero, los sistemas con clientes reales y los más completos. Al final, mis primeros proyectos, que todavía tengo pendiente refactorizar.',
+    subtitle: 'Primero, los sistemas con clientes reales y los más completos. Al final, proyectos más pequeños o antiguos que tengo pendiente refactorizar.',
     sections: {
       destacado: { title: 'Destacados', text: 'Clientes reales, despliegue, pruebas y CI.' },
       principal: { title: 'Más proyectos', text: 'Académicos y personales, la mayoría desplegados.' },
-      temprano: { title: 'Primeros proyectos', text: 'De cuando empecé a programar. Pendientes de refactorización y mejora.' }
+      temprano: { title: 'Por mejorar', text: 'Proyectos más pequeños o antiguos, pendientes de refactorización y mejora.' }
     },
     loading: 'Cargando proyectos...',
     more: 'Ver más',
@@ -316,11 +316,11 @@ const en: Copy = {
   projectsPage: {
     title: 'Projects',
     highlight: 'What I have built',
-    subtitle: 'First, the systems with real clients and the most complete ones. At the end, my first projects, which I still plan to refactor.',
+    subtitle: 'First, the systems with real clients and the most complete ones. At the end, smaller or older projects I still plan to refactor.',
     sections: {
       destacado: { title: 'Featured', text: 'Real clients, deployment, tests and CI.' },
       principal: { title: 'More projects', text: 'Academic and personal, most of them deployed.' },
-      temprano: { title: 'Early projects', text: 'From when I started programming. Pending refactoring and improvement.' }
+      temprano: { title: 'To improve', text: 'Smaller or older projects, pending refactoring and improvement.' }
     },
     loading: 'Loading projects...',
     more: 'See more',
