@@ -108,7 +108,12 @@ export class CertificadosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCertificates();
+    // Igual que proyectos y servicios: la API solo se consulta en el navegador.
+    // Llamarla al prerenderizar alargaba el build y lo hacía fallar por timeout.
+    // En el servidor queda el spinner, así no se prerenderiza un falso "no hay certificados".
+    if (this.isBrowser) {
+      this.loadCertificates();
+    }
   }
 
   loadCertificates(): void {
