@@ -1,8 +1,9 @@
+@let t = i18n.copy().featured;
 <section
   class="featured-projects-section"
   [class.is-scroll-pinned-mode]="isScrollPinEnabled"
   id="proyectos-destacados"
-  aria-label="Galería interactiva de proyectos"
+  [attr.aria-label]="t.regionLabel"
   (keydown)="onCarouselKeyDown($event)"
 >
   <div
@@ -13,12 +14,12 @@
   >
     <div class="wave-sticky-viewport" [class.is-pinned]="isPinned">
       <div class="projects-container">
-        <a href="#proyectos-controles" class="skip-carousel-link">Saltar a los controles de proyectos</a>
+        <a href="#proyectos-controles" class="skip-carousel-link">{{ t.skip }}</a>
 
         <div class="section-header home-section-header wave-section-header">
           <div class="header-copy">
-            <p class="chapter-kicker">04 · Obra</p>
-            <h2 class="section-title">Proyectos</h2>
+            <p class="chapter-kicker">{{ t.kicker }}</p>
+            <h2 class="section-title">{{ t.title }}</h2>
           </div>
         </div>
 
@@ -27,7 +28,7 @@
     <!-- Loading Skeleton -->
     <div *ngIf="!hasError && isLoading" class="wave-loading" role="status" aria-live="polite">
       <div class="premium-spinner"></div>
-      <p>Cargando galería de proyectos...</p>
+      <p>{{ t.loading }}</p>
     </div>
 
     <!-- Real 3D Inertial Wave Carousel -->
@@ -40,8 +41,8 @@
         class="wave-stage"
         tabindex="0"
         role="region"
-        aria-roledescription="carrusel 3D"
-        aria-label="Carrusel 3D de proyectos: arrastra o usa las teclas izquierda y derecha"
+        [attr.aria-roledescription]="t.carouselRole"
+        [attr.aria-label]="t.carouselLabel"
       >
         <canvas
           #waveCanvas
@@ -62,7 +63,7 @@
             type="button"
             class="wave-arrow-btn"
             (click)="prevProject()"
-            aria-label="Proyecto anterior"
+            [attr.aria-label]="t.prev"
           >
             <i class="fas fa-chevron-left" aria-hidden="true"></i>
           </button>
@@ -83,7 +84,7 @@
                 <span>{{ getStatusText(project.status) }}</span>
               </span>
               <span *ngIf="getImageCount(project) > 1" class="active-images-pill">
-                <i class="fas fa-images" aria-hidden="true"></i> {{ getImageCount(project) }} fotos
+                <i class="fas fa-images" aria-hidden="true"></i> {{ getImageCount(project) }} {{ t.photos }}
               </span>
             </div>
 
@@ -97,8 +98,8 @@
             </div>
 
             <div class="active-actions-row">
-              <a [routerLink]="['/proyectos', project.id]" class="wave-cta-primary">
-                Ver proyecto <i class="fas fa-arrow-right" aria-hidden="true"></i>
+              <a [routerLink]="i18n.link('/proyectos/' + project.id)" class="wave-cta-primary">
+                {{ t.view }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
               </a>
               <a
                 *ngIf="project.webUrl"
@@ -107,7 +108,7 @@
                 rel="noopener noreferrer"
                 class="wave-cta-secondary"
               >
-                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Demo en vivo
+                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> {{ t.demo }}
               </a>
               <a
                 *ngIf="project.githubUrl"
@@ -116,7 +117,7 @@
                 rel="noopener noreferrer"
                 class="wave-cta-secondary"
               >
-                <i class="fab fa-github" aria-hidden="true"></i> Código
+                <i class="fab fa-github" aria-hidden="true"></i> {{ t.code }}
               </a>
             </div>
           </div>
@@ -125,21 +126,21 @@
             type="button"
             class="wave-arrow-btn"
             (click)="nextProject()"
-            aria-label="Proyecto siguiente"
+            [attr.aria-label]="t.next"
           >
             <i class="fas fa-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
 
         <!-- Named Dot Indicators -->
-        <nav class="wave-dots" aria-label="Seleccionar proyecto">
+        <nav class="wave-dots" [attr.aria-label]="t.dots">
           <button
             *ngFor="let p of featuredProjects; let i = index"
             type="button"
             class="wave-dot"
             [class.is-active]="i === selectedIndex"
             [attr.aria-current]="i === selectedIndex ? 'true' : null"
-            [attr.aria-label]="'Mostrar proyecto ' + (i + 1) + ': ' + p.title"
+            [attr.aria-label]="t.show + ' ' + (i + 1) + ': ' + p.title"
             [title]="p.title"
             (click)="selectProjectDot(i)"
           ></button>
@@ -157,7 +158,7 @@
         <article *ngFor="let project of featuredProjects" class="project-card">
           <div class="project-image">
             <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
-            <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
+            <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' ' + t.photos">
               <i class="fas fa-images" aria-hidden="true"></i> {{ getImageCount(project) }}
             </span>
           </div>
@@ -178,12 +179,12 @@
               </div>
             </div>
             <div class="project-links">
-              <a [routerLink]="['/proyectos', project.id]">Detalles</a>
+              <a [routerLink]="i18n.link('/proyectos/' + project.id)">{{ t.view }}</a>
               <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-github" aria-hidden="true"></i> Código
+                <i class="fab fa-github" aria-hidden="true"></i> {{ t.code }}
               </a>
               <a *ngIf="project.webUrl" [href]="project.webUrl" target="_blank" rel="noopener noreferrer">
-                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Demo
+                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> {{ t.demo }}
               </a>
             </div>
           </div>
@@ -193,8 +194,8 @@
 
         <!-- View All Button -->
         <div class="view-all-container">
-          <a routerLink="/proyectos" class="btn-view-all">
-            Ver todos los proyectos ({{ featuredProjects.length || 19 }})
+          <a [routerLink]="i18n.link('/proyectos')" class="btn-view-all">
+            {{ t.all }}@if (totalProjects) { ({{ totalProjects }}) }
           </a>
         </div>
       </div>

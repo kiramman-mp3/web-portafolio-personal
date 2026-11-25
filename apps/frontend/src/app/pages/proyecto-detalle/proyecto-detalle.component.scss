@@ -607,3 +607,112 @@
     transform: translateY(-10px);
   }
 }
+
+/* Caso de estudio: problema, solución, decisiones y resultado */
+.case-study {
+  h3 {
+    margin: 1.75rem 0 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--primary);
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  p,
+  li {
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  li + li {
+    margin-top: 0.4rem;
+  }
+}
+
+.detail-summary {
+  margin: 0 0 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--text-color);
+}
+
+/* README del repositorio, colapsado bajo el caso de estudio */
+.readme-box {
+  margin-top: 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+
+  summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 1.1rem 1.5rem;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: '+';
+      position: absolute;
+      right: 1.5rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: var(--radius-card);
+    }
+  }
+
+  & {
+    position: relative;
+  }
+
+  &[open] summary::after {
+    content: '−';
+  }
+
+  .readme-title {
+    font-weight: 600;
+    color: var(--text-color);
+    padding-right: 2rem;
+  }
+
+  .readme-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .project-rich-description {
+    padding: 0 1.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+  }
+}
+
+.role-panel .panel-text {
+  margin: 0 0 1.25rem;
+  color: var(--text-color);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -15,7 +15,14 @@ export interface WaveEngineOptions {
   projects: Project[];
   initialIndex: number;
   reducedMotion: boolean;
+  /** Textos dibujados en las tarjetas, en el idioma de la página. */
+  labels: WaveCardLabels;
   callbacks: WaveEngineCallbacks;
+}
+
+export interface WaveCardLabels {
+  status: Record<string, string>;
+  photos: string;
 }
 
 const S = 3.7;
@@ -153,7 +160,8 @@ function paintProjectDeckCanvas(
   project: Project,
   index: number,
   total: number,
-  coverImg: HTMLImageElement | null
+  coverImg: HTMLImageElement | null,
+  labels: WaveCardLabels
 ): HTMLCanvasElement {
   const W = 720;
   const H = 1000;
@@ -200,12 +208,7 @@ function paintProjectDeckCanvas(
       : project.status === 'en-progreso'
         ? '#fbbf24'
         : '#60a5fa';
-  const statusLabel =
-    project.status === 'completado'
-      ? 'COMPLETADO'
-      : project.status === 'en-progreso'
-        ? 'EN PROGRESO'
-        : 'PLANIFICADO';
+  const statusLabel = (labels.status[project.status] ?? project.status).toUpperCase();
 
   ctx.font = '600 18px "IBM Plex Mono", ui-monospace, monospace';
   const stWidth = ctx.measureText(statusLabel).width;
@@ -264,7 +267,7 @@ function paintProjectDeckCanvas(
   // Multi-image indicator if > 1 image
   const imgCount = getProjectImages(project).length;
   if (imgCount > 1) {
-    const countTxt = `${imgCount} FOTOS`;
+    const countTxt = `${imgCount} ${labels.photos}`.toUpperCase();
     ctx.font = '600 18px "IBM Plex Mono", ui-monospace, monospace';
     const cw = ctx.measureText(countTxt).width + 26;
     const cx = imgX + imgW - cw - 16;
@@ -325,6 +328,7 @@ export class ProjectWaveEngine {
   private projects: Project[];
   private callbacks: WaveEngineCallbacks;
   private reducedMotion: boolean;
+  private labels: WaveCardLabels;
 
   private THREE: any;
   private renderer: any;
@@ -398,6 +402,7 @@ export class ProjectWaveEngine {
     this.projects = options.projects;
     this.callbacks = options.callbacks;
     this.reducedMotion = options.reducedMotion;
+    this.labels = options.labels;
     this.selectedIndex = positiveModulo(options.initialIndex, Math.max(1, options.projects.length));
     this.position = this.selectedIndex * S;
     this.target = this.position;
@@ -521,7 +526,7 @@ export class ProjectWaveEngine {
 
       const maxAniso = Math.min(this.renderer.capabilities.getMaxAnisotropy?.() || 4, 8);
       this.projectTextures = this.projects.map((project, idx) => {
-        const texCanvas = paintProjectDeckCanvas(project, idx, this.projects.length, decodedCovers[idx]);
+        const texCanvas = paintProjectDeckCanvas(project, idx, this.projects.length, decodedCovers[idx], this.labels);
         const texture = new THREE.CanvasTexture(texCanvas);
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.anisotropy = maxAniso;

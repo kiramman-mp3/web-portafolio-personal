@@ -1,3 +1,4 @@
+@let t = i18n.copy().certs;
 <!-- Recorrido académico con scroll: colegio y universidad -->
 <app-education-journey></app-education-journey>
 
@@ -7,11 +8,11 @@
     <!-- Page Header -->
     <div class="certificates-page-header">
       <h2 class="page-title">
-        <span class="title-main">Certificaciones & Logros</span>
-        <span class="title-highlight">Formación Continua</span>
+        <span class="title-main">{{ t.title }}</span>
+        <span class="title-highlight">{{ t.highlight }}</span>
       </h2>
       <p class="page-subtitle">
-        Acreditaciones académicas y profesionales que respaldan mis habilidades en desarrollo de software, arquitectura de sistemas y tecnologías en la nube.
+        {{ t.subtitle }}
       </p>
     </div>
 
@@ -23,7 +24,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-number">{{ stats.totalCertificates }}</span>
-          <span class="stat-label">Certificados Obtenidos</span>
+          <span class="stat-label">{{ t.stats[0] }}</span>
         </div>
       </div>
 
@@ -33,7 +34,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-number">+{{ stats.totalHours }}h</span>
-          <span class="stat-label">Horas de Especialización</span>
+          <span class="stat-label">{{ t.stats[1] }}</span>
         </div>
       </div>
 
@@ -43,7 +44,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-number">{{ stats.verifiedPercentage }}%</span>
-          <span class="stat-label">Credenciales Verificables</span>
+          <span class="stat-label">{{ t.stats[2] }}</span>
         </div>
       </div>
 
@@ -53,7 +54,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-number">{{ stats.specialtiesCount }}</span>
-          <span class="stat-label">Áreas de Dominio</span>
+          <span class="stat-label">{{ t.stats[3] }}</span>
         </div>
       </div>
     </div>
@@ -61,17 +62,17 @@
     <!-- Interactive Filters (solo categorías con certificados) -->
     <div class="filters-container" *ngIf="!hasError">
       <button (click)="setFilter('todos')" class="filter-btn" [class.active]="currentFilter === 'todos'">
-        <i class="fas fa-th-large"></i> Todos ({{ certificates.length }})
+        <i class="fas fa-th-large"></i> {{ t.all }} ({{ certificates.length }})
       </button>
       <button *ngFor="let cat of availableCategories" (click)="setFilter(cat.id)" class="filter-btn" [class.active]="currentFilter === cat.id">
-        <i [class]="cat.icon"></i> {{ cat.label }} ({{ cat.count }})
+        <i [class]="cat.icon"></i> {{ t.categories[cat.id] ?? cat.label }} ({{ cat.count }})
       </button>
     </div>
 
     <!-- Loading State -->
     <div *ngIf="isLoading" class="loading-spinner-container">
       <div class="premium-spinner"></div>
-      <p class="loading-text">Cargando certificaciones...</p>
+      <p class="loading-text">{{ t.loading }}</p>
     </div>
 
     <!-- Certificates Grid -->
@@ -104,7 +105,7 @@
             <i class="fas fa-award"></i>
           </div>
           <div class="cert-banner-text">
-            <span class="cert-official-label">CERTIFICADO DE FINALIZACIÓN</span>
+            <span class="cert-official-label">{{ t.badge }}</span>
             <span class="cert-meta-year">{{ cert.date }} • {{ cert.hours }} horas</span>
           </div>
         </div>
@@ -116,7 +117,7 @@
 
           <!-- Skills Badges -->
           <div class="cert-skills-wrap">
-            <div class="cert-skills-title">Competencias adquiridas:</div>
+            <div class="cert-skills-title">{{ t.skills }}</div>
             <div class="cert-skills-list">
               <span *ngFor="let skill of cert.skills" class="tech-tag-badge">
                 <i [class]="getTechIcon(skill)" [style.color]="getTechColor(skill)"></i>
@@ -128,7 +129,7 @@
           <!-- Credential Footer Info -->
           <div class="cert-footer-info">
             <div class="credential-id-box">
-              <span class="credential-label">ID Credencial:</span>
+              <span class="credential-label">{{ t.credential }}</span>
               <code class="credential-code">{{ cert.credentialId }}</code>
             </div>
           </div>
@@ -137,11 +138,11 @@
         <!-- Card Actions -->
         <div class="cert-actions">
           <button type="button" class="view-cert-btn" (click)="$event.stopPropagation(); openCertificateModal(cert)">
-            <i class="fas fa-expand-alt"></i> Ver Detalle
+            <i class="fas fa-expand-alt"></i> {{ t.view }}
           </button>
           <a *ngIf="cert.credentialUrl" [href]="cert.credentialUrl" target="_blank" rel="noopener noreferrer"
              class="verify-link-btn" (click)="$event.stopPropagation()">
-            <i class="fas fa-external-link-alt"></i> Validar
+            <i class="fas fa-external-link-alt"></i> {{ t.verify }}
           </a>
         </div>
 
@@ -153,10 +154,10 @@
       <div class="empty-icon-box">
         <i class="fas fa-certificate"></i>
       </div>
-      <h3>No se encontraron certificados</h3>
-      <p>No hay acreditaciones en esta categoría por el momento.</p>
+      <h3>{{ t.empty }}</h3>
+      <p>{{ t.emptyText }}</p>
       <button class="btn-reset-filter" (click)="setFilter('todos')">
-        Ver todos los certificados
+        {{ t.seeAll }}
       </button>
     </div>
 
@@ -168,7 +169,7 @@
   <div class="cert-modal-dialog" (click)="$event.stopPropagation()">
     
     <!-- Modal Close Button -->
-    <button type="button" class="modal-close-btn" (click)="closeModal()" aria-label="Cerrar modal">
+    <button type="button" class="modal-close-btn" (click)="closeModal()" [attr.aria-label]="t.close">
       <i class="fas fa-times"></i>
     </button>
 
@@ -177,11 +178,11 @@
       <div class="modal-diploma-seal">
         <i class="fas fa-award"></i>
       </div>
-      <div class="modal-diploma-sub">ACREDITACIÓN PROFESIONAL VERIFICADA</div>
+      <div class="modal-diploma-sub">{{ t.modalSub }}</div>
       <h2 class="modal-diploma-title">{{ selectedCertificate.title }}</h2>
       <div class="modal-diploma-issuer">
         <i [class]="selectedCertificate.issuerIcon"></i>
-        <span>Emitido por: <strong>{{ selectedCertificate.issuer }}</strong></span>
+        <span>{{ t.issuedBy }} <strong>{{ selectedCertificate.issuer }}</strong></span>
       </div>
     </div>
 
@@ -195,30 +196,30 @@
 
       <div class="modal-info-grid">
         <div class="modal-info-item">
-          <span class="info-label"><i class="fas fa-calendar-alt"></i> Año de Emisión</span>
+          <span class="info-label"><i class="fas fa-calendar-alt"></i> {{ t.year }}</span>
           <span class="info-val">{{ selectedCertificate.date }}</span>
         </div>
         <div class="modal-info-item">
-          <span class="info-label"><i class="fas fa-clock"></i> Carga Horaria</span>
+          <span class="info-label"><i class="fas fa-clock"></i> {{ t.hours }}</span>
           <span class="info-val">{{ selectedCertificate.hours }} Horas Académicas</span>
         </div>
         <div class="modal-info-item">
-          <span class="info-label"><i class="fas fa-tag"></i> Categoría</span>
+          <span class="info-label"><i class="fas fa-tag"></i> {{ t.category }}</span>
           <span class="info-val">{{ getCategoryLabel(selectedCertificate.category) }}</span>
         </div>
         <div class="modal-info-item">
-          <span class="info-label"><i class="fas fa-hourglass-half"></i> Expiración</span>
+          <span class="info-label"><i class="fas fa-hourglass-half"></i> {{ t.expiration }}</span>
           <span class="info-val">{{ selectedCertificate.expirationDate || 'No expira' }}</span>
         </div>
       </div>
 
       <div class="modal-description-box">
-        <h4>Alcance y Objetivos de la Especialización</h4>
+        <h4>{{ t.scope }}</h4>
         <p>{{ selectedCertificate.description }}</p>
       </div>
 
       <div class="modal-skills-box">
-        <h4>Tecnologías & Habilidades Clave</h4>
+        <h4>{{ t.tech }}</h4>
         <div class="modal-skills-tags">
           <span *ngFor="let skill of selectedCertificate.skills" class="tech-tag-badge">
             <i [class]="getTechIcon(skill)" [style.color]="getTechColor(skill)"></i>
@@ -229,12 +230,12 @@
 
       <div class="modal-credential-box">
         <div class="credential-info">
-          <span class="credential-title">Identificador Oficial de Credencial</span>
+          <span class="credential-title">{{ t.credentialTitle }}</span>
           <code class="credential-id-text">{{ selectedCertificate.credentialId }}</code>
         </div>
         <button type="button" class="btn-copy-id" (click)="copyCredentialId(selectedCertificate.credentialId)">
           <i class="fas" [ngClass]="copiedId ? 'fa-check' : 'fa-copy'"></i>
-          <span>{{ copiedId ? '¡Copiado!' : 'Copiar ID' }}</span>
+          <span>{{ copiedId ? t.copied : t.copy }}</span>
         </button>
       </div>
 
@@ -243,11 +244,11 @@
     <!-- Modal Footer Actions -->
     <div class="modal-diploma-footer">
       <button type="button" class="btn-modal-close" (click)="closeModal()">
-        Cerrar
+        {{ t.close }}
       </button>
       <a *ngIf="selectedCertificate.credentialUrl" [href]="selectedCertificate.credentialUrl"
          target="_blank" rel="noopener noreferrer" class="btn-modal-verify">
-        <i class="fas fa-external-link-alt"></i> Validar en Plataforma Emisora
+        <i class="fas fa-external-link-alt"></i> {{ t.verifyIssuer }}
       </a>
     </div>
 

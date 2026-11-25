@@ -8,14 +8,17 @@ import {
   PLATFORM_ID,
   QueryList,
   ViewChildren,
+  computed,
+  inject,
   signal,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HeroComponent } from '../../components/hero/hero.component';
 import { CorporateAboutComponent } from '../../components/corporate-about/corporate-about.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { FeaturedServicesComponent } from '../../components/featured-services/featured-services.component';
+import { ExperienceComponent } from '../../components/experience/experience.component';
 import { FeaturedProjectsComponent } from '../../components/featured-projects/featured-projects.component';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 interface StoryChapter {
   id: string;
@@ -30,7 +33,7 @@ interface StoryChapter {
     CommonModule,
     HeroComponent,
     CorporateAboutComponent,
-    FeaturedServicesComponent,
+    ExperienceComponent,
     FeaturedProjectsComponent,
     FooterComponent,
   ],
@@ -40,12 +43,16 @@ interface StoryChapter {
 export class Home implements AfterViewInit, OnDestroy {
   @ViewChildren('storyChapter') chapterElements!: QueryList<ElementRef<HTMLElement>>;
 
-  readonly chapters: StoryChapter[] = [
-    { id: 'capitulo-inicio', num: '01', label: 'Inicio' },
-    { id: 'capitulo-sobre-mi', num: '02', label: 'Sobre mí' },
-    { id: 'capitulo-servicios', num: '03', label: 'Servicios' },
-    { id: 'capitulo-proyectos', num: '04', label: 'Proyectos' },
-  ];
+  readonly i18n = inject(I18nService);
+  readonly chapters = computed<StoryChapter[]>(() => {
+    const c = this.i18n.copy().chapters;
+    return [
+      { id: 'capitulo-inicio', num: '01', label: c.hero },
+      { id: 'capitulo-sobre-mi', num: '02', label: c.about },
+      { id: 'capitulo-experiencia', num: '03', label: c.experience },
+      { id: 'capitulo-proyectos', num: '04', label: c.projects },
+    ];
+  });
 
   activeChapterIndex = signal(0);
   scrollProgress = signal(0);

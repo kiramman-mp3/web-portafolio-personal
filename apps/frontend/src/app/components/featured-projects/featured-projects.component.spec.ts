@@ -4,39 +4,24 @@ import { of } from 'rxjs';
 import { FeaturedProjectsComponent } from './featured-projects.component';
 import { Project, ProjectsService } from '../../shared/services/projects.service';
 
+const base = (id: number, title: string): Project => ({
+  id,
+  title,
+  shortDescription: `Descripción de ${title}.`,
+  description: `# ${title}`,
+  technologies: ['TypeScript'],
+  status: 'completado',
+  image: `https://example.com/${id}-1.jpg`,
+  images: [`https://example.com/${id}-1.jpg`, `https://example.com/${id}-2.jpg`],
+});
+
+// Viene desordenado y mezclado a propósito: la portada solo muestra los destacados, en su orden
 const MOCK_PROJECTS: Project[] = [
-  {
-    id: 7,
-    title: 'TunguMarket',
-    shortDescription: 'Marketplace local para Tungurahua.',
-    description: '# TunguMarket',
-    technologies: ['React', 'Node.js', 'PostgreSQL'],
-    status: 'completado',
-    image: 'https://example.com/tungu-1.jpg',
-    images: ['https://example.com/tungu-1.jpg', 'https://example.com/tungu-2.jpg'],
-    githubUrl: 'https://github.com/kiramman-mp3/sistema-ecommerce-local',
-    webUrl: 'https://tungumarket.madebyjohan.xyz/',
-  },
-  {
-    id: 8,
-    title: 'WikiCraft',
-    shortDescription: 'Enciclopedia interactiva de Minecraft.',
-    description: '# WikiCraft',
-    technologies: ['HTML5', 'CSS3', 'JavaScript'],
-    status: 'completado',
-    image: 'https://example.com/wiki-1.jpg',
-    images: ['https://example.com/wiki-1.jpg'],
-  },
-  {
-    id: 21,
-    title: 'Sistema de Rastreo de Buses UTA',
-    shortDescription: 'Rastreo GPS en vivo para buses universitarios.',
-    description: '# Buses UTA',
-    technologies: ['Odoo', 'Python', 'Traccar'],
-    status: 'completado',
-    image: 'https://example.com/buses-1.jpg',
-    images: ['https://example.com/buses-1.jpg', 'https://example.com/buses-2.jpg'],
-  },
+  base(8, 'WikiCraft'),               // primeros proyectos: no va en la portada
+  base(21, 'Sistema de Rastreo de Buses UTA'),
+  base(7, 'TunguMarket'),             // "más proyectos": no va en la portada
+  base(17, 'Ecosistema Karen'),
+  base(16, 'Junta de Agua y Riego "La Jones"'),
 ];
 
 describe('FeaturedProjectsComponent', () => {
@@ -57,13 +42,14 @@ describe('FeaturedProjectsComponent', () => {
     }).compileComponents();
   });
 
-  it('loads real projects and falls back cleanly when WebGL is unavailable', () => {
+  it('shows only featured projects, in editorial order, with curated titles', () => {
     const fixture = TestBed.createComponent(FeaturedProjectsComponent);
     fixture.detectChanges();
 
     const comp = fixture.componentInstance;
-    expect(comp.featuredProjects.length).toBe(3);
-    expect(comp.activeProject?.title).toBe('TunguMarket');
+    expect(comp.featuredProjects.map(p => p.id)).toEqual([16, 17, 21]);
+    expect(comp.totalProjects).toBe(5);
+    expect(comp.activeProject?.title).toBe('Junta de Agua y Riego La Jones');
     expect(comp.isWebGLUnavailable).toBe(true);
 
     const cards = fixture.nativeElement.querySelectorAll('.project-card');
@@ -77,11 +63,11 @@ describe('FeaturedProjectsComponent', () => {
 
     comp.nextProject();
     expect(comp.selectedIndex).toBe(1);
-    expect(comp.activeProject?.title).toBe('WikiCraft');
+    expect(comp.activeProject?.title).toBe('Ecosistema Karen');
 
     comp.onCarouselKeyDown(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
     expect(comp.selectedIndex).toBe(2);
-    expect(comp.activeProject?.title).toBe('Sistema de Rastreo de Buses UTA');
+    expect(comp.activeProject?.title).toBe('Rastreo de Buses UTA');
 
     comp.onCarouselKeyDown(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     expect(comp.selectedIndex).toBe(1);

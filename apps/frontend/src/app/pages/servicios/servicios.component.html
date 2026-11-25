@@ -1,19 +1,18 @@
+@let t = i18n.copy().services;
 <section class="services-page-section">
   <div class="services-page-container">
     <div class="services-page-header">
       <h1 class="page-title">
-        <span class="title-main">Servicios</span>
-        <span class="title-highlight">Lo que puedo construir para ti</span>
+        <span class="title-main">{{ t.title }}</span>
+        <span class="title-highlight">{{ t.highlight }}</span>
       </h1>
-      <p class="page-subtitle">
-        Tiendas en línea, aplicaciones web y sistemas a medida, de la base de datos a la pantalla.
-      </p>
+      <p class="page-subtitle">{{ t.subtitle }}</p>
     </div>
 
     <!-- Loading State -->
     <div *ngIf="isLoading" class="loading-spinner-container">
       <div class="premium-spinner"></div>
-      <p class="loading-text">Cargando servicios...</p>
+      <p class="loading-text">{{ t.loading }}</p>
     </div>
 
     <app-connection-error *ngIf="!isLoading && hasError" (retry)="loadServices()"></app-connection-error>
@@ -47,7 +46,7 @@
           </div>
 
           <div class="tech-tags-wrapper" *ngIf="service.technologies && service.technologies.length > 0">
-            <h3 class="tech-title">Tecnologías Clave:</h3>
+            <h3 class="tech-title">{{ t.tech }}</h3>
             <div class="tech-tags">
               <span *ngFor="let tech of service.technologies" class="tech-tag">
                 <i [class]="getTechIcon(tech)" [style.color]="getTechColor(tech)"></i> {{ tech }}
@@ -56,8 +55,8 @@
           </div>
           
           <div class="service-actions">
-            <a routerLink="/contacto" class="btn-quote">
-              Cotizar Proyecto <i class="fas fa-arrow-right"></i>
+            <a [routerLink]="i18n.link('/contacto')" class="btn-quote">
+              {{ t.quote }} <i class="fas fa-arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </div>

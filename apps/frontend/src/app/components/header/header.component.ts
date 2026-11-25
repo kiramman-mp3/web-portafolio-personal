@@ -7,7 +7,8 @@ import { NavigationService } from '../../shared/services/navigation.service';
 import { ScrollService, scrollBehavior } from '../../shared/services/scroll.service';
 import { LogoMarkComponent } from '../logo-mark/logo-mark.component';
 import { signal } from '@angular/core';
-import { CV_URL, GITHUB_URL, LINKEDIN_URL } from '../../shared/constants/profile';
+import { GITHUB_URL, LINKEDIN_URL } from '../../shared/constants/profile';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
     selector: 'app-header',
@@ -22,7 +23,6 @@ export class HeaderComponent implements OnDestroy {
     isMenuOpen = signal(false);
     linkedinUrl = LINKEDIN_URL;
     githubUrl = GITHUB_URL;
-    cvUrl = CV_URL;
     // Ruta actual sin query ni fragmento, para marcar la sección activa en la píldora
     currentPath = signal('/');
     private navEndSub?: Subscription;
@@ -32,7 +32,8 @@ export class HeaderComponent implements OnDestroy {
         public navigationService: NavigationService,
         private scrollService: ScrollService,
         private router: Router,
-        private elementRef: ElementRef
+        private elementRef: ElementRef,
+        public i18n: I18nService
     ) {
         this.routeSub = this.router.events
             .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
@@ -45,7 +46,7 @@ export class HeaderComponent implements OnDestroy {
     }
 
     isActive(path: string): boolean {
-        const current = this.currentPath();
+        const current = this.currentPath().replace(/^\/en(?=\/|$)/, '') || '/';
         return path === '/' ? current === '/' : current.startsWith(path);
     }
 
@@ -61,7 +62,7 @@ export class HeaderComponent implements OnDestroy {
         };
 
         const baseUrl = this.router.url.split('?')[0].split('#')[0];
-        const isOnHome = baseUrl === '/' || baseUrl === '';
+        const isOnHome = baseUrl === this.i18n.link('/') || baseUrl === '';
 
         if (isOnHome) {
             doScroll();
@@ -73,49 +74,17 @@ export class HeaderComponent implements OnDestroy {
                     this.navEndSub?.unsubscribe();
                     this.scrollService.scrollToSectionWhenReady(sectionId);
                 });
-            this.router.navigate(['/']);
+            this.router.navigateByUrl(this.i18n.link('/'));
         }
     }
 
-    navigateTo(path: string): void {
-        this.router.navigate([path]);
-        this.isMenuOpen.set(false);
-    }
-
-    navigateToProjects(): void {
-        if (this.router.url === '/proyectos') {
-            // Si ya estamos en proyectos, hacer scroll al inicio
+    /** Navega a una página del sitio en el idioma actual; si ya está ahí, sube al inicio. */
+    go(path: string): void {
+        const target = this.i18n.link(path);
+        if (this.router.url.split(/[?#]/)[0] === target) {
             window.scrollTo({ top: 0, behavior: scrollBehavior() });
         } else {
-            // Navegar a la página de proyectos
-            this.router.navigate(['/proyectos']);
-        }
-        this.isMenuOpen.set(false);
-    }
-
-    navigateToServices(): void {
-        if (this.router.url === '/servicios') {
-            window.scrollTo({ top: 0, behavior: scrollBehavior() });
-        } else {
-            this.router.navigate(['/servicios']);
-        }
-        this.isMenuOpen.set(false);
-    }
-
-    navigateToEducation(): void {
-        if (this.router.url === '/educacion') {
-            window.scrollTo({ top: 0, behavior: scrollBehavior() });
-        } else {
-            this.router.navigate(['/educacion']);
-        }
-        this.isMenuOpen.set(false);
-    }
-
-    navigateToContact(): void {
-        if (this.router.url === '/contacto') {
-            window.scrollTo({ top: 0, behavior: scrollBehavior() });
-        } else {
-            this.router.navigate(['/contacto']);
+            this.router.navigateByUrl(target);
         }
         this.isMenuOpen.set(false);
     }

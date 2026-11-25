@@ -1,38 +1,27 @@
+@let t = i18n.copy().contact;
 <section class="contact-section" id="contacto">
   <div class="contact-container">
     
     <!-- Left Column: Info -->
     <div class="contact-info-panel">
-      <h2 class="contact-title">¿Tienes un proyecto en mente?</h2>
-      <p class="contact-description">
-        Cuéntame qué quieres construir. Leo cada mensaje y respondo desde mi correo personal.
-      </p>
+      <h2 class="contact-title">{{ t.title }}</h2>
+      <p class="contact-description">{{ t.description }}</p>
 
       <ul class="contact-features">
-        <li>
-          <span class="feature-icon">
-            <i class="fa-solid fa-circle-check"></i>
-          </span>
-          Respuesta en menos de 24 horas
-        </li>
-        <li>
-          <span class="feature-icon">
-            <i class="fa-solid fa-circle-check"></i>
-          </span>
-          Consultoría inicial sin compromiso
-        </li>
-        <li>
-          <span class="feature-icon">
-            <i class="fa-solid fa-circle-check"></i>
-          </span>
-          Presupuesto adaptado a tu necesidad
-        </li>
+        @for (f of t.features; track f) {
+          <li>
+            <span class="feature-icon">
+              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            </span>
+            {{ f }}
+          </li>
+        }
       </ul>
     </div>
 
     <!-- Right Column: Message Form Card -->
     <div class="contact-card" id="formulario-contacto">
-      <h3 class="card-title">Escríbeme</h3>
+      <h3 class="card-title">{{ t.card }}</h3>
       
       <!-- Notifications -->
       <div *ngIf="successMessage" class="form-alert success">
@@ -45,12 +34,12 @@
       <form (ngSubmit)="onSubmit()" #contactForm="ngForm" class="contact-form">
         <!-- Name -->
         <div class="form-group">
-          <label for="name">Nombre <span class="required">*</span></label>
+          <label for="name">{{ t.name }} <span class="required">*</span></label>
           <input 
             type="text" 
             id="name" 
             name="name" 
-            placeholder="Tu nombre" 
+            [placeholder]="t.namePh" 
             [(ngModel)]="formData.name" 
             required 
             #nameInput="ngModel"
@@ -60,12 +49,12 @@
 
         <!-- Email -->
         <div class="form-group">
-          <label for="email">Email <span class="required">*</span></label>
+          <label for="email">{{ t.email }} <span class="required">*</span></label>
           <input 
             type="email" 
             id="email" 
             name="email" 
-            placeholder="tu@email.com" 
+            [placeholder]="t.emailPh" 
             [(ngModel)]="formData.email" 
             required 
             email
@@ -76,23 +65,23 @@
 
         <!-- Subject -->
         <div class="form-group">
-          <label for="subject">Asunto</label>
+          <label for="subject">{{ t.subject }}</label>
           <input 
             type="text" 
             id="subject" 
             name="subject" 
-            placeholder="Ej: Consulta sobre desarrollo web" 
+            [placeholder]="t.subjectPh" 
             [(ngModel)]="formData.subject"
           />
         </div>
 
         <!-- Message -->
         <div class="form-group">
-          <label for="message">Mensaje <span class="required">*</span></label>
+          <label for="message">{{ t.message }} <span class="required">*</span></label>
           <textarea 
             id="message" 
             name="message" 
-            placeholder="Qué necesitas, para cuándo y con qué stack, si ya lo sabes" 
+            [placeholder]="t.messagePh" 
             [(ngModel)]="formData.message" 
             required
             #messageInput="ngModel"
@@ -103,10 +92,10 @@
         <!-- Submit Button -->
         <button type="submit" [disabled]="contactForm.invalid || isSubmitting" class="btn-submit">
           <ng-container *ngIf="!isSubmitting">
-            <i class="fa-solid fa-paper-plane"></i> Enviar mensaje
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> {{ t.send }}
           </ng-container>
           <ng-container *ngIf="isSubmitting">
-            <i class="fa-solid fa-circle-notch fa-spin"></i> Enviando...
+            <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i> {{ t.sending }}
           </ng-container>
         </button>
       </form>

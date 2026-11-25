@@ -8,6 +8,7 @@ import {
   ElementRef,
   ViewChild,
   NgZone,
+  inject,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -17,6 +18,8 @@ import {
   getProjectCover,
   getProjectImages,
 } from '../../shared/services/projects.service';
+import { I18nService } from '../../shared/i18n/i18n.service';
+import { byTier, localize } from '../../shared/content/curation';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import type { ProjectWaveEngine } from './project-wave-engine';
 
@@ -33,6 +36,8 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
   @ViewChild('waveCanvas') waveCanvasRef?: ElementRef<HTMLCanvasElement>;
 
   featuredProjects: Project[] = [];
+  totalProjects = 0;
+  readonly i18n = inject(I18nService);
   isBrowser = false;
   hasError = false;
   isLoading = true;
@@ -213,11 +218,14 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.projectsService.getProjects().subscribe({
       next: (projects) => {
-        this.featuredProjects = projects;
+        // En la portada solo van los destacados, en su orden y con el texto curado del idioma actual
+        const lang = this.i18n.lang();
+        this.totalProjects = projects.length;
+        this.featuredProjects = byTier(projects, 'destacado').map(p => localize(p, lang));
         this.isLoading = false;
-        this.selectedIndex = this.resolveInitialIndexFromUrl(projects);
+        this.selectedIndex = this.resolveInitialIndexFromUrl(this.featuredProjects);
         this.cdr.detectChanges();
-        if (projects.length > 0) {
+        if (this.featuredProjects.length > 0) {
           this.scheduleLazyThreeInit();
         }
       },
@@ -345,6 +353,7 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
           projects: this.featuredProjects,
           initialIndex: this.selectedIndex,
           reducedMotion: this.reducedMotion,
+          labels: { status: this.i18n.copy().status, photos: this.i18n.copy().featured.photos },
           callbacks: {
             onReady: () => {
               this.ngZone.run(() => {
@@ -496,16 +505,7 @@ export class FeaturedProjectsComponent implements OnInit, OnDestroy {
   }
 
   getStatusText(status: string): string {
-    switch (status) {
-      case 'completado':
-        return 'Completado';
-      case 'en-progreso':
-        return 'En Progreso';
-      case 'planificado':
-        return 'Planificado';
-      default:
-        return '';
-    }
+    return this.i18n.copy().status[status] ?? '';
   }
 
   getStatusIcon(status: string): string {
