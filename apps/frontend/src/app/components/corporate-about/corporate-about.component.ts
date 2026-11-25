@@ -1,10 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
-interface AboutFact {
-  label: string;
-  value: string;
-}
-
+/** Sección "Sobre mí" de la portada; los textos están en shared/i18n/copy.ts. */
 @Component({
   selector: 'app-corporate-about',
   standalone: true,
@@ -12,11 +9,5 @@ interface AboutFact {
   styleUrl: './corporate-about.component.scss',
 })
 export class CorporateAboutComponent {
-  facts: AboutFact[] = [
-    { label: 'Ubicación', value: 'Tungurahua, Ecuador' },
-    { label: 'Estudios', value: 'Universidad Técnica de Ambato' },
-    { label: 'Frontend', value: 'TypeScript, React, Angular' },
-    { label: 'Backend', value: 'Node.js, Express, NestJS' },
-    { label: 'Datos', value: 'PostgreSQL, MySQL' },
-  ];
+  readonly i18n = inject(I18nService);
 }

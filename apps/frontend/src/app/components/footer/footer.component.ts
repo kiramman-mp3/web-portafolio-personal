@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { inject, Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogoMarkComponent } from '../logo-mark/logo-mark.component';
 import { RouterModule } from '@angular/router';
-import { CV_URL, LINKEDIN_URL } from '../../shared/constants/profile';
+import { LINKEDIN_URL } from '../../shared/constants/profile';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-footer',
@@ -14,7 +15,7 @@ import { CV_URL, LINKEDIN_URL } from '../../shared/constants/profile';
 })
 export class FooterComponent {
   readonly linkedinUrl = LINKEDIN_URL;
-  readonly cvUrl = CV_URL;
+  readonly i18n = inject(I18nService);
 }
 
 

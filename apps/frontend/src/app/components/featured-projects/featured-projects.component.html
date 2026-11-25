@@ -1,7 +1,8 @@
+@let t = i18n.copy().featured;
 <section class="featured-projects-section" id="proyectos-destacados">
   <div class="projects-container">
     <div class="section-header home-section-header">
-      <h2 class="section-title">Proyectos</h2>
+      <h2 class="section-title">{{ t.title }}</h2>
     </div>
 
     <app-connection-error *ngIf="hasError" (retry)="loadProjects()"></app-connection-error>
@@ -10,7 +11,7 @@
       <div *ngFor="let project of featuredProjects" class="project-card">
         <div class="project-image">
           <img [src]="getCoverImage(project)" [alt]="project.title" loading="lazy" />
-          <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' imágenes'">
+          <span *ngIf="getImageCount(project) > 1" class="image-count-badge" [title]="getImageCount(project) + ' ' + t.photos">
             <i class="fas fa-images"></i> {{ getImageCount(project) }}
           </span>
         </div>
@@ -31,12 +32,12 @@
             </div>
           </div>
           <div class="project-links">
-            <a [routerLink]="['/proyectos', project.id]">Detalles</a>
+            <a [routerLink]="i18n.link('/proyectos/' + project.id)">{{ t.view }}</a>
             <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-github" aria-hidden="true"></i> Código
+              <i class="fab fa-github" aria-hidden="true"></i> {{ t.code }}
             </a>
             <a *ngIf="project.webUrl" [href]="project.webUrl" target="_blank" rel="noopener noreferrer">
-              <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Demo
+              <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> {{ t.demo }}
             </a>
           </div>
         </div>
@@ -45,8 +46,8 @@
 
     <!-- View All Button -->
     <div class="view-all-container">
-      <a routerLink="/proyectos" class="btn-view-all">
-        Ver todos los proyectos
+      <a [routerLink]="i18n.link('/proyectos')" class="btn-view-all">
+        {{ t.all }}@if (totalProjects) { ({{ totalProjects }}) }
       </a>
     </div>
   </div>

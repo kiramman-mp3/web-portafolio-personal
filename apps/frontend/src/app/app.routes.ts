@@ -7,39 +7,21 @@ import { ProyectoDetalleComponent } from './pages/proyecto-detalle/proyecto-deta
 import { CertificadosComponent } from './pages/certificados/certificados.component';
 import { AdminComponent } from './pages/admin/admin.component';
 
+// Páginas públicas; se sirven en español en "/" y en inglés bajo "/en".
+// `page` elige el título y la descripción de copy.ts (el detalle de proyecto pone los suyos).
+const pages: Routes = [
+  { path: '', component: Home, data: { page: 'home' } },
+  { path: 'contacto', component: ContactComponent, data: { page: 'contact' } },
+  { path: 'servicios', component: ServiciosComponent, data: { page: 'services' } },
+  { path: 'proyectos', component: ProyectosComponent, data: { page: 'projects' } },
+  { path: 'proyectos/:id', component: ProyectoDetalleComponent },
+  { path: 'educacion', component: CertificadosComponent, data: { page: 'education' } },
+  // La página se llamaba Certificados; el enlace viejo sigue funcionando
+  { path: 'certificados', redirectTo: 'educacion', pathMatch: 'full' }
+];
+
 export const routes: Routes = [
-  {
-    path: '',
-    component: Home
-  },
-  {
-    path: 'contacto',
-    component: ContactComponent
-  },
-  {
-    path: 'servicios',
-    component: ServiciosComponent
-  },
-  {
-    path: 'proyectos',
-    component: ProyectosComponent
-  },
-  {
-    path: 'proyectos/:id',
-    component: ProyectoDetalleComponent
-  },
-  {
-    path: 'educacion',
-    component: CertificadosComponent
-  },
-  {
-    // La página se llamaba Certificados; el enlace viejo sigue funcionando
-    path: 'certificados',
-    redirectTo: 'educacion',
-    pathMatch: 'full'
-  },
-  {
-    path: 'admin',
-    component: AdminComponent
-  }
+  { path: 'en', children: pages },
+  ...pages,
+  { path: 'admin', component: AdminComponent }
 ];

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ServicesService, ServiceItem } from '../../shared/services/services.service';
@@ -6,6 +6,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { ConnectionErrorComponent } from '../../shared/components/connection-error/connection-error.component';
 import { MarkdownPipe } from '../../shared/pipes/markdown.pipe';
 import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-servicios-page',
@@ -15,6 +16,7 @@ import { getTechIcon, getTechColor } from '../../shared/constants/tech-list';
   styleUrl: './servicios.component.scss'
 })
 export class ServiciosComponent implements OnInit {
+  readonly i18n = inject(I18nService);
   services: ServiceItem[] = [];
   isBrowser = false;
   isLoading = true;
@@ -41,7 +43,9 @@ export class ServiciosComponent implements OnInit {
     this.hasError = false;
     this.servicesService.getServices().subscribe({
       next: (data) => {
-        this.services = data;
+        // Los textos de cada servicio salen de copy.ts en el idioma actual; la API aporta imagen y tecnologías
+        const items = this.i18n.copy().services.items;
+        this.services = data.map(svc => ({ ...svc, ...(items[svc.id] ?? {}) }));
         this.isLoading = false;
         this.cdr.detectChanges();
       },

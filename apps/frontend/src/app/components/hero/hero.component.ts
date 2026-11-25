@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonComponent } from '../button/button.component';
 import { GithubActivity, GithubActivityService, GITHUB_USER } from '../../shared/services/github-activity.service';
-import { AVAILABILITY, CV_URL } from '../../shared/constants/profile';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-hero',
@@ -19,8 +19,7 @@ export class HeroComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   readonly githubUser = GITHUB_USER;
-  readonly availability = AVAILABILITY;
-  readonly cvUrl = CV_URL;
+  readonly i18n = inject(I18nService);
   activity = signal<GithubActivity | null>(null);
   failed = signal(false);
 
@@ -35,7 +34,7 @@ export class HeroComponent implements OnInit {
 
   timeAgo(date: Date): string {
     const minutes = Math.round((Date.now() - date.getTime()) / 60000);
-    const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+    const rtf = new Intl.RelativeTimeFormat(this.i18n.lang(), { numeric: 'auto' });
     if (minutes < 60) return rtf.format(-minutes, 'minute');
     const hours = Math.round(minutes / 60);
     if (hours < 24) return rtf.format(-hours, 'hour');
@@ -45,6 +44,6 @@ export class HeroComponent implements OnInit {
   }
 
   scrollToContact(): void {
-    this.router.navigate(['/contacto'], { fragment: 'formulario-contacto' });
+    this.router.navigate([this.i18n.link('/contacto')], { fragment: 'formulario-contacto' });
   }
 }

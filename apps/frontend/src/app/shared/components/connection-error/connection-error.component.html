@@ -1,8 +1,9 @@
+@let t = i18n.copy().error;
 <div class="connection-error-state" role="alert">
-  <i class="fas fa-wifi"></i>
-  <h3>Sin conexión</h3>
-  <p>Comprueba tu conexión a internet e inténtalo de nuevo.</p>
+  <i class="fas fa-wifi" aria-hidden="true"></i>
+  <h3>{{ t.title }}</h3>
+  <p>{{ t.text }}</p>
   <button type="button" class="btn-retry" (click)="retry.emit()">
-    <i class="fas fa-rotate-right"></i> Reintentar
+    <i class="fas fa-rotate-right" aria-hidden="true"></i> {{ t.retry }}
   </button>
 </div>

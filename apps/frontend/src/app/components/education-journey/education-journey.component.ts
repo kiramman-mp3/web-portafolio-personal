@@ -4,9 +4,11 @@ import {
   ElementRef,
   HostListener,
   afterNextRender,
+  computed,
   inject,
   signal
 } from '@angular/core';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 interface JourneyStep {
   node: string;
@@ -37,32 +39,21 @@ export class EducationJourneyComponent {
 
   active = signal(0);
 
-  steps: JourneyStep[] = [
-    {
-      node: 'Colegio',
-      title: 'Empecé en el colegio',
-      text: 'Cursé el Bachillerato General Unificado en la Unidad Educativa 17 de Abril, en el cantón donde vivo.',
-      stage: 'Colegio',
-      institution: 'Unidad Educativa 17 de Abril',
-      program: 'Bachillerato General Unificado · Especialidad en Ciencias',
-      place: 'Tungurahua, Ecuador',
-      crest: '/img/escudo-17-de-abril.jpg',
-      graduation: '20 de junio de 2022',
-      refrendation: 'ME-REF-06303245'
-    },
-    {
-      node: 'Universidad',
-      title: 'Sigo en Ambato',
-      text: 'Hoy estudio Ingeniería en Software en la Universidad Técnica de Ambato, en la capital de la provincia.',
-      stage: 'Universidad',
-      institution: 'Universidad Técnica de Ambato',
-      program: 'Ingeniería en Software',
-      place: 'Ambato, Tungurahua, Ecuador',
-      crest: '/img/logo-uta.png',
-      graduation: '2027 (previsto)',
-      status: 'En curso'
-    }
+  readonly i18n = inject(I18nService);
+
+  // Datos fijos de cada paso; los textos traducibles vienen de copy.ts (education.steps), en el mismo orden
+  private readonly fixed = [
+    { institution: 'Unidad Educativa 17 de Abril', crest: '/img/escudo-17-de-abril.jpg', refrendation: 'ME-REF-06303245' },
+    { institution: 'Universidad Técnica de Ambato', crest: '/img/logo-uta.png' }
   ];
+
+  readonly steps = computed<JourneyStep[]>(() =>
+    this.i18n.copy().education.steps.map((step, i) => ({
+      ...step,
+      ...this.fixed[i],
+      status: step.status || undefined
+    }))
+  );
 
   constructor() {
     // afterNextRender solo corre en el navegador y ya con los pasos hidratados en el DOM

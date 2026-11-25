@@ -47,45 +47,44 @@
   margin: 0 auto 4rem;
 }
 
-/* Category Filters */
-.filters-container {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 3.5rem;
-  flex-wrap: wrap;
+/* Secciones por nivel: destacados, más proyectos y primeros proyectos */
+.tier-section + .tier-section {
+  margin-top: 5rem;
+}
 
-  .filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--field-bg);
-    border: 1px solid var(--field-border);
-    color: rgb(var(--ink-rgb) / 0.85);
-    padding: 10px 22px;
-    border-radius: 50px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
+.tier-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
 
-    i {
-      font-size: 0.85rem;
-    }
+.tier-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 600;
+}
 
-    &:hover {
-      border-color: rgb(var(--primary-rgb) / 0.4);
-      background: rgb(var(--primary-rgb) / 0.1);
-      color: var(--primary);
-    }
+.tier-text {
+  margin: 0.4rem 0 0;
+  color: var(--text-muted);
+}
 
-    &.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: var(--on-primary);
-      box-shadow: 0 4px 15px rgb(var(--primary-rgb) / 0.35);
-    }
+// Los primeros proyectos se ven más discretos: no compiten con los destacados
+.tier-temprano .project-detail-card {
+  opacity: 0.82;
+  transition: opacity 0.25s ease;
+
+  &:hover,
+  &:focus-within {
+    opacity: 1;
   }
+}
+
+.card-role {
+  margin: -0.25rem 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--primary);
 }
 
 /* Projects Grid */
