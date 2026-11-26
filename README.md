@@ -14,7 +14,7 @@ My personal portfolio, in Spanish and English: experience with real clients, pro
 
 - **i18n without extra libraries:** the language comes from the URL (`/` Spanish, `/en` English). One service handles the text, links, `lang`, canonical and `hreflang` per page (`apps/frontend/src/app/shared/i18n`).
 - **Editorial curation separate from the data:** the API returns every project, and `shared/content/curation.ts` decides which are featured. It also sets their order and the role, context and case study (problem, solution, technical decisions and result) in both languages.
-- **CV generated from code:** `cv/build.mjs` renders the CV in HTML and exports it to PDF with headless Chrome (ES and EN, one page each).
+- **CV in LaTeX:** `cv/cv-es.tex` and `cv/cv-en.tex` share the `cv/johancv.sty` style (sidebar with photo). `node cv/build.mjs` compiles them with [Tectonic](https://tectonic-typesetting.github.io) and copies the PDFs to `apps/frontend/public` (one page each). They also compile on Overleaf with XeLaTeX.
 
 ## Development
 
@@ -30,7 +30,7 @@ To use the production API from local: `localStorage.setItem('use_remote_api', 't
 cd apps/frontend
 npx ng test --watch=false   # unit tests (Vitest)
 npx ng build                # SSR build + prerendering of the ES and EN routes
-node ../../cv/build.mjs     # regenerates the PDFs in apps/frontend/public
+node ../../cv/build.mjs     # compiles the LaTeX CVs into apps/frontend/public (needs Tectonic)
 ```
 
 ## License

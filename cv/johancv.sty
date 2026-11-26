@@ -1,0 +1,71 @@
+% Estilo del CV: barra lateral gris con foto a la izquierda y contenido a la derecha.
+% Se compila con XeLaTeX (Tectonic): node cv/build.mjs, o en Overleaf con el compilador XeLaTeX.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{johancv}
+
+\RequirePackage[a4paper,left=0.6cm,right=0.8cm,top=0.7cm,bottom=0.4cm]{geometry}
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{fontawesome5}
+\RequirePackage{enumitem}
+\RequirePackage[hidelinks]{hyperref}
+
+\setmainfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\definecolor{lateral}{HTML}{5E5E5E}
+\definecolor{lateraloscuro}{HTML}{3A3D42}
+\definecolor{tinta}{HTML}{222222}
+\definecolor{suave}{HTML}{555555}
+\definecolor{barra}{HTML}{3F3F3F}
+
+% Ancho de la barra lateral y de su contenido
+\newlength{\anchoLateral}\setlength{\anchoLateral}{7.2cm}
+\newlength{\anchoTextoLateral}\setlength{\anchoTextoLateral}{6.0cm}
+\newlength{\anchoPrincipal}\setlength{\anchoPrincipal}{12.4cm}
+
+% Fondo: barra gris y franja oscura detrás de la foto
+\newcommand{\fondo}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[lateral] (current page.north west) rectangle ([xshift=\anchoLateral]current page.south west);
+    \fill[lateraloscuro] (current page.north west) rectangle ([xshift=\anchoLateral,yshift=-3.4cm]current page.north west);
+  \end{tikzpicture}}
+
+% Foto circular con borde blanco
+\newcommand{\foto}[1]{%
+  {\centering
+  \begin{tikzpicture}
+    \fill[white] (0,0) circle (2.17cm);
+    \clip (0,0) circle (2.05cm);
+    \node at (0,0) {\includegraphics[width=4.1cm]{#1}};
+  \end{tikzpicture}\par}}
+
+% Títulos de la barra lateral (blancos) y del contenido (oscuros), con línea debajo
+\newcommand{\tituloLateral}[1]{%
+  \vspace{9pt}{\color{white}\bfseries\fontsize{10.5}{12}\selectfont\MakeUppercase{#1}}\par
+  \vspace{3pt}{\color{white}\rule{\linewidth}{1.6pt}}\par\vspace{5pt}}
+\newcommand{\titulo}[1]{%
+  \vspace{8pt}{\color{tinta}\bfseries\fontsize{11}{13}\selectfont\MakeUppercase{#1}}\par
+  \vspace{2pt}{\color{tinta}\rule{\linewidth}{2pt}}\par\vspace{4pt}}
+
+% Dato de contacto con icono
+\newcommand{\contacto}[2]{\makebox[0.55cm][l]{\small #1}#2\par\vspace{3pt}}
+
+% Barra de nivel de idioma: #1 = fracción (0 a 1)
+\newcommand{\nivel}[1]{%
+  \begin{tikzpicture}
+    \fill[barra] (0,0) rectangle (\anchoTextoLateral,0.16);
+    \fill[white!85!lateral] (0,0) rectangle (#1\anchoTextoLateral,0.16);
+  \end{tikzpicture}\par}
+
+% Puesto de experiencia: fechas, cargo, organización, enlace
+\newcommand{\puesto}[4]{%
+  {\color{suave}\small #1}\par
+  {\bfseries\color{tinta} #2}\ {\color{suave}\textbar\ #3}\par
+  \ifx&#4&\else{\color{suave}\small #4}\par\fi}
+
+\newenvironment{vinetas}{\begin{itemize}[leftmargin=11pt,itemsep=1pt,topsep=2pt,parsep=0pt,label=\textbullet]}{\end{itemize}}
+\newenvironment{vinetasLateral}{\begin{itemize}[leftmargin=10pt,itemsep=2pt,topsep=0pt,parsep=0pt,label=\textbullet]}{\end{itemize}}
