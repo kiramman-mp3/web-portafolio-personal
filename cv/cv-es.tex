@@ -1,0 +1,93 @@
+\documentclass[9pt]{extarticle}
+\usepackage{johancv}
+\usepackage[spanish,es-noshorthands]{babel}
+
+\begin{document}
+\fondo
+\noindent
+% ---------------------------------------------------------------- barra lateral
+\begin{minipage}[t]{\anchoTextoLateral}
+\vspace{0pt}
+\foto{foto.jpg}
+\vspace{14pt}
+\color{white}\small\raggedright
+\contacto{\faMapMarker*}{Ambato, Ecuador · Remoto o híbrido}
+\contacto{\faPhone}{+593 96 195 7956}
+\contacto{\faEnvelope}{\href{mailto:907johan@gmail.com}{907johan@gmail.com}}
+\contacto{\faGlobe}{\href{https://madebyjohan.xyz}{madebyjohan.xyz}}
+\contacto{\faLinkedin}{\href{https://linkedin.com/in/johan-rodriguez-dev}{linkedin.com/in/johan-rodriguez-dev}}
+\contacto{\faGithub}{\href{https://github.com/kiramman-mp3}{github.com/kiramman-mp3}}
+
+\tituloLateral{Perfil}
+Desarrollador Full Stack con TypeScript. Construyo y mantengo sistemas que usan organizaciones reales de Tungurahua: una junta de riego, un supermercado y una liga deportiva. Trabajo con pruebas automatizadas, integración continua y despliegue en servidor propio. Busco un puesto Full Stack o Frontend, remoto o híbrido.
+
+\tituloLateral{Logros y certificaciones}
+\begin{vinetasLateral}
+  \item \textbf{Sistema aprobado en producción:} la directiva de la Junta La Jones lo aprobó tras la capacitación (nov 2026); 150 usuarios.
+  \item \textbf{Full Stack Open:} University of Helsinki, 2025 (5 ECTS).
+  \item \textbf{IBM SkillsBuild, 2026:} Front-End, Back-End, Testing y Deployment.
+\end{vinetasLateral}
+
+\tituloLateral{Idiomas}
+\textbf{Español:}\hfill Nativo\par\vspace{2pt}
+\nivel{1}\vspace{4pt}
+\textbf{Inglés:}\hfill C1-\par\vspace{2pt}
+\nivel{0.82}
+\vspace{1pt}{\footnotesize Suficiencia en inglés, UTA, 2024}\par
+
+\tituloLateral{Habilidades técnicas}
+\textbf{Lenguajes:} TypeScript, JavaScript, Python, SQL\par\vspace{3pt}
+\textbf{Frontend:} Angular, React, React Native (Expo), Tailwind CSS\par\vspace{3pt}
+\textbf{Backend y datos:} Node.js (Express, NestJS), PostgreSQL, MySQL, Prisma\par\vspace{3pt}
+\textbf{Calidad y DevOps:} Playwright, Vitest, GitHub Actions, Docker, Linux\par\vspace{3pt}
+\textbf{También:} Laravel, ASP.NET Core, Odoo, Rust, Tauri\par
+\end{minipage}%
+\hspace{1.2cm}%
+% ---------------------------------------------------------------- contenido
+\begin{minipage}[t]{\anchoPrincipal}
+\vspace{0pt}
+\color{tinta}
+{\bfseries\fontsize{34}{36}\selectfont Johan\par Rodríguez\par}
+\vspace{6pt}
+{\color{suave}\fontsize{11.5}{14}\selectfont Desarrollador Full Stack · TypeScript (Angular, React, Node.js)\par}
+
+\titulo{Experiencia}
+\puesto{Ago 2026 – Actualidad}{Desarrollador Full Stack}{Junta de Agua y Riego La Jones, Patate}{Vinculación con la sociedad (UTA), luego mantenimiento y capacitación · \href{https://juntalajones.com}{juntalajones.com}}
+\begin{vinetas}
+  \item Líder técnico de un equipo de 10 en un sistema web que reemplazó los cuadernos de turnos de riego, el control de mingas con multas y los cobros con comprobante PDF.
+  \item Aprobado por la directiva tras la capacitación (nov 2026): 150 usuarios y 4 directivos. 13 versiones publicadas.
+  \item Pruebas unitarias y e2e con Playwright, CI en GitHub Actions y convocatorias automáticas por mbox{WhatsApp}.
+\end{vinetas}
+{\small\color{suave}Angular, TypeScript, Express, MySQL, Playwright, Docker}\par
+\vspace{6pt}
+\puesto{Sep 2026 – Actualidad}{Desarrollador Full Stack freelance}{Supermercado Karen}{Sistema en piloto · \href{https://karen.madebyjohan.xyz}{karen.madebyjohan.xyz}}
+\begin{vinetas}
+  \item Líder técnico (equipo de 4) de un inventario por lotes FEFO con alertas de caducidad, reservas con código de retiro y un asistente de IA: portal web, app de bodega y app para clientes.
+  \item Desplegado en mi servidor con Docker y Cloudflare Tunnel. Conozco el proceso por dentro: trabajé en caja y bodega del supermercado (2024–2025).
+\end{vinetas}
+{\small\color{suave}React, React Native (Expo), Express, PostgreSQL, Docker}\par
+\vspace{6pt}
+\puesto{Oct 2026 – Actualidad}{Desarrollador Full Stack (voluntario)}{Liga Cantonal de Quero}{En desarrollo, lanzamiento previsto en 2027}
+\begin{vinetas}
+  \item Plataforma de gestión deportiva: clubes, deportistas, campeonatos, árbitros, expedientes disciplinarios y portal público. Pruebas y CI desde el inicio.
+\end{vinetas}
+{\small\color{suave}NestJS, Prisma, PostgreSQL, React}\par
+
+\titulo{Proyectos}
+\textbf{BIFRÖST} \textbar\ {\small\href{https://github.com/kiramman-mp3/bifrost}{github.com/kiramman-mp3/bifrost}}\par
+Subsistema Android de código abierto para Windows 11 (QEMU + WHPX), con desarrollo asistido por IA: especificación, revisión, 145 pruebas y CI. {\small\color{suave}Rust, Tauri 2}\par\vspace{4pt}
+\textbf{Rastreo de Buses UTA} \textbar\ {\small\href{https://buses.madebyjohan.xyz}{buses.madebyjohan.xyz}}\par
+Líder técnico (equipo de 2). GPS en vivo de los buses universitarios: módulo Odoo 16, Traccar, app de tableta y portal público. {\small\color{suave}Python, Odoo, PostgreSQL, React Native}\par\vspace{4pt}
+\textbf{LMS con asistente de IA} \textbar\ {\small\href{https://lms.madebyjohan.xyz}{lms.madebyjohan.xyz}}\par
+Líder técnico (equipo de 3). IA sobre Moodle 5.1 que planifica cursos desde el sílabo y responde con datos reales del curso. {\small\color{suave}NestJS, PostgreSQL + pgvector}\par\vspace{4pt}
+\textbf{Homelab} \textbar\ {\small\href{https://madebyjohan.xyz}{madebyjohan.xyz}}\par
+Servidor propio con 42 contenedores y 12 aplicaciones públicas; despliegue continuo con vuelta atrás automática. {\small\color{suave}Docker, Linux, Cloudflare Tunnel}\par\vspace{4pt}
+\textbf{Rol de Pagos Ecuador} \textbar\ {\small\href{https://nomina.madebyjohan.xyz}{nomina.madebyjohan.xyz}}\par
+Nómina con reglas de ley parametrizables (Código del Trabajo, LOSEP, LOEP, IESS, décimos e impuesto a la renta) y cálculo exacto de dinero con decimales. {\small\color{suave}Angular, Express, PostgreSQL, Vitest}\par
+
+\titulo{Educación}
+{\color{suave}\small 2022 – 2027 (prevista)}\par
+\textbf{Ingeniería de Software}\par
+Universidad Técnica de Ambato\par
+\end{minipage}
+\end{document}
